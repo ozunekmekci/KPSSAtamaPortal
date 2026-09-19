@@ -114,6 +114,9 @@ export function searchDepartments(query: string, limit: number = 20): Department
   }
 
   const queryNorm = normalizeTrSearch(trimmed);
+  if (trimmed.length > 0 && queryNorm.length === 0 && !/^\d+$/.test(trimmed)) {
+    return [];
+  }
   const queryTr = normalizeTr(trimmed);
   const queryTokens = queryNorm.split(/\s+/).filter(Boolean);
 
@@ -328,7 +331,14 @@ export function searchKadroByCode(kadroKodu: string): PlacementRecord | undefine
 
 export function searchPlacements(query: string, options?: SearchOptions): PlacementRecord[] {
   const trimmed = (query || '').trim();
-  const queryTokens = trimmed ? normalizeTrSearch(trimmed).split(/\s+/).filter(Boolean) : [];
+  const normalizedQuery = normalizeTrSearch(trimmed);
+
+  // Pure punctuation query (e.g. "...", "???") returns empty array gracefully
+  if (trimmed.length > 0 && normalizedQuery.length === 0) {
+    return [];
+  }
+
+  const queryTokens = trimmed ? normalizedQuery.split(/\s+/).filter(Boolean) : [];
 
   let candidateRecords: PlacementRecord[];
 

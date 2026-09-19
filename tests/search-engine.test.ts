@@ -7,7 +7,7 @@ import {
   getPlacementsForDepartment,
   getPlacementsForQualificationCode,
 } from '@/lib/search-engine';
-import { searchIndex } from '@/lib/search-index';
+import { searchIndex, TITLE_ALIASES } from '@/lib/search-index';
 
 describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () => {
   // ==========================================================================
@@ -421,6 +421,38 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
       expect(searchIndex.recordsByCity.size).toBeGreaterThan(30);
       expect(searchIndex.recordSearchCorpus.size).toBe(702);
       expect(searchIndex.tokenToRecordIds.size).toBeGreaterThan(500);
+    });
+  });
+
+  // ==========================================================================
+  // 7. Challenger 2 Refinements
+  // ==========================================================================
+  describe('Challenger 2 Refinements', () => {
+    it('verifies TITLE_ALIASES maps "vhki" and "v.h.k.i." to "veri hazirlama ve kontrol isletmeni"', () => {
+      expect(TITLE_ALIASES['vhki']).toBeDefined();
+      expect(TITLE_ALIASES['vhki']).toContain('veri hazirlama ve kontrol isletmeni');
+
+      expect(TITLE_ALIASES['v.h.k.i.']).toBeDefined();
+      expect(TITLE_ALIASES['v.h.k.i.']).toContain('veri hazirlama ve kontrol isletmeni');
+
+      // Check searchPlacements resolves vhki and v.h.k.i. queries
+      const vhkiResults = searchPlacements('vhki');
+      expect(vhkiResults.length).toBeGreaterThan(0);
+      expect(
+        vhkiResults.some((r) => r.kadroUnvani.includes('V.H.K.İ.') || r.kadroUnvani.includes('VERİ'))
+      ).toBe(true);
+
+      const dotResults = searchPlacements('v.h.k.i.');
+      expect(dotResults.length).toBeGreaterThan(0);
+    });
+
+    it('ensures pure punctuation queries return empty array gracefully without errors', () => {
+      expect(searchPlacements('...')).toEqual([]);
+      expect(searchPlacements('???')).toEqual([]);
+      expect(searchPlacements('---')).toEqual([]);
+      expect(searchPlacements('!@#$%^&*()')).toEqual([]);
+      expect(searchDepartments('...')).toEqual([]);
+      expect(getPlacementsForDepartment('...')).toEqual([]);
     });
   });
 });

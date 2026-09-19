@@ -14,7 +14,7 @@ import { normalizeTrSearch } from '@/lib/turkish';
 // ============================================================================
 // Acronym & Alias Dictionaries for High-Fidelity Turkish Matching
 // ============================================================================
-const INSTITUTION_ALIASES: Record<string, string[]> = {
+export const INSTITUTION_ALIASES: Record<string, string[]> = {
   'DEVLET HAVA MEYDANLARI İŞLETMESİ GENEL MÜDÜRLÜĞÜ': ['dhmi', 'dhmi genel mudurlugu', 'hava meydanlari'],
   'TÜRKİYE ELEKTRİK İLETİM A.Ş. GENEL MÜDÜRLÜĞÜ': ['teias', 'teias genel mudurlugu'],
   'SOSYAL GÜVENLİK KURUMU BAŞKANLIĞI': ['sgk', 'sgk baskanligi'],
@@ -34,8 +34,12 @@ const INSTITUTION_ALIASES: Record<string, string[]> = {
   'TİCARET BAKANLIĞI': ['gumruk', 'ticaret'],
 };
 
-const TITLE_ALIASES: Record<string, string[]> = {
-  'V.H.K.İ.': ['vhki', 'veri hazirlama ve kontrol isletmeni', 'veri hazirlama'],
+export const TITLE_ALIASES: Record<string, string[]> = {
+  'vhki': ['veri hazirlama ve kontrol isletmeni', 'v.h.k.i.', 'vhki'],
+  'v.h.k.i.': ['veri hazirlama ve kontrol isletmeni', 'vhki', 'v.h.k.i.'],
+  'V.H.K.İ.': ['vhki', 'v.h.k.i.', 'veri hazirlama ve kontrol isletmeni', 'veri hazirlama'],
+  'V.H.K.İ. (VERİ HAZIRLAMA VE KONTROL İŞLETMENİ)': ['vhki', 'v.h.k.i.', 'veri hazirlama ve kontrol isletmeni', 'veri hazirlama'],
+  'VERİ HAZIRLAMA VE KONTROL İŞLETMENİ': ['vhki', 'v.h.k.i.', 'veri hazirlama ve kontrol isletmeni', 'veri hazirlama'],
   'BİLGİSAYAR İŞLETMENİ': ['bilgisayar isletmeni'],
   'ARFF MEMURU': ['arff', 'itfaiye', 'hava meydani itfaiye'],
   'AIM MEMURU': ['aim', 'havacilik bilgi yonetimi', 'havacilik bilgi memuru'],
@@ -151,6 +155,11 @@ function buildSearchIndex(): SearchIndex {
     const titleAliases = TITLE_ALIASES[record.kadroUnvani];
     if (titleAliases) {
       corpusParts.push(...titleAliases);
+    }
+    for (const [titleKey, aliases] of Object.entries(TITLE_ALIASES)) {
+      if (record.kadroUnvani.includes(titleKey)) {
+        corpusParts.push(...aliases);
+      }
     }
 
     // Append qualification metadata & eligible departments
