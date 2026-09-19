@@ -19,6 +19,7 @@ import FilterSidebar from '@/components/FilterSidebar';
 import CadreTable from '@/components/CadreTable';
 import CadreDetailDrawer from '@/components/CadreDetailDrawer';
 import AnalyticsPanel from '@/components/AnalyticsPanel';
+import SeoFaqSection from '@/components/SeoFaqSection';
 
 export default function HomePage() {
   // Global View State: Table vs Analytics
@@ -289,6 +290,9 @@ export default function HomePage() {
           onFilterByCode={handleCodeBadgeClick}
           onFilterByKurum={handleFilterByKurum}
         />
+
+        {/* SEO FAQ & Public Information Guide */}
+        <SeoFaqSection />
 
         {/* Official Institutional Footer */}
         <footer className="mt-10 border-t border-slate-300 pt-5 pb-8 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3">
