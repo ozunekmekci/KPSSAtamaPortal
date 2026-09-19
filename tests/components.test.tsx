@@ -442,7 +442,7 @@ describe('KPSS Portal UI Components & Interactions (Milestone 4)', () => {
     it('renders full portal shell, workbench, table and allows filtering', () => {
       render(<HomePage />);
 
-      expect(screen.getByText(/KPSS Merkezi Yerleştirme ve Nitelik Kodu Portalı/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/KPSS Merkezi Yerleştirme ve Nitelik Kodu Portalı/i)[0]).toBeInTheDocument();
       expect(screen.getByText(/Akıllı Arama ve Çift Yönlü Nitelik Eşleştirme Tezgahı/i)).toBeInTheDocument();
       expect(screen.getByText(/Filtreleme Paneli/i)).toBeInTheDocument();
 

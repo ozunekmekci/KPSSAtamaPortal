@@ -625,6 +625,14 @@ export default function FilterSidebar({
                 </div>
               </div>
 
+              {criteria.minPuan !== undefined &&
+                criteria.maxPuan !== undefined &&
+                criteria.minPuan > criteria.maxPuan && (
+                  <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 p-1.5 mt-1.5 font-medium">
+                    ⚠️ Asgari puan (min), azami puandan (max) yüksek olamaz.
+                  </p>
+                )}
+
               {/* Slider for quick visual adjustments */}
               <div className="pt-1">
                 <input

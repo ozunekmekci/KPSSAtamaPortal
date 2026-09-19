@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import SeoStructuredData from '@/components/SeoStructuredData';
+import CookieBanner from '@/components/CookieBanner';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kpssportal.pages.dev';
 
@@ -94,6 +95,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased font-sans">
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

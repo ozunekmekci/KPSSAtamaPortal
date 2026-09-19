@@ -20,6 +20,7 @@ import {
   DepartmentSearchResult,
   QualificationLookupResult,
 } from '@/lib/search-engine';
+import { trackEvent } from '@/lib/analytics';
 
 export interface SearchWorkbenchProps {
   onSelectDepartmentPlacements: (department: Department) => void;
@@ -74,24 +75,26 @@ export default function SearchWorkbench({
     return searchDepartments(deptQuery, 15);
   }, [deptQuery]);
 
-  // Code search computation using search-engine
+  // Code search computation using search-engine with numeric sanitization
   const handleCodeInputChange = (value: string) => {
-    const safeValue = value ?? '';
-    setCodeQuery(safeValue);
-    const trimmed = safeValue.trim();
-    if (/^\d{4}$/.test(trimmed)) {
-      const result = searchByQualificationCode(trimmed);
+    // Sanitize to digits only, max 4 characters
+    const numericOnly = (value ?? '').replace(/\D/g, '').slice(0, 4);
+    setCodeQuery(numericOnly);
+    if (numericOnly.length === 4) {
+      const result = searchByQualificationCode(numericOnly);
       setSelectedCodeResult(result ?? null);
-    } else if (trimmed === '') {
+      trackEvent('lookup_qualification_code', { code: numericOnly });
+    } else if (numericOnly === '') {
       setSelectedCodeResult(null);
     }
   };
 
   const handleSelectCodeChip = (code: string) => {
-    const safeCode = code ?? '';
+    const safeCode = (code ?? '').replace(/\D/g, '').slice(0, 4);
     setCodeQuery(safeCode);
     const result = searchByQualificationCode(safeCode);
     setSelectedCodeResult(result ?? null);
+    trackEvent('lookup_qualification_code', { code: safeCode, source: 'chip' });
   };
 
   const getEducationLevelBadge = (level?: EducationLevel | 'hepsi' | string | null) => {
@@ -332,10 +335,11 @@ export default function SearchWorkbench({
                       type="button"
                       onClick={() => {
                         if (selectedDept) {
+                          trackEvent('search_department', { dept: selectedDept.ad, code: selectedDept.primaryCode });
                           onSelectDepartmentPlacements(selectedDept);
                         }
                       }}
-                      className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2.5 px-4 text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
+                      className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-4 text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs active:scale-[0.99]"
                     >
                       <span>Bu Bölümün Atamalarını ve Taban Puanlarını Listele</span>
                       <ArrowRight className="w-4 h-4" />
@@ -375,6 +379,11 @@ export default function SearchWorkbench({
                 className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-300 bg-white text-slate-900 font-mono font-bold tracking-wider placeholder:text-slate-400 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none tabular-nums"
               />
             </div>
+            {codeQuery.length > 0 && codeQuery.length < 4 && (
+              <p className="text-[11px] text-amber-850 bg-amber-50 border border-amber-200 px-2 py-0.5 inline-block font-mono mt-1">
+                4 haneli kod bekleniyor ({codeQuery.length}/4)
+              </p>
+            )}
 
             {/* Quick Pick Code Chips */}
             <div className="mt-2.5 flex flex-wrap gap-1.5 items-center text-xs text-slate-600">
@@ -490,10 +499,14 @@ export default function SearchWorkbench({
                     type="button"
                     onClick={() => {
                       if (selectedCodeResult && selectedCodeResult.code) {
+                        trackEvent('lookup_qualification_code', {
+                          code: selectedCodeResult.code,
+                          action: 'list_cadres',
+                        });
                         onSelectCodePlacements(selectedCodeResult.code);
                       }
                     }}
-                    className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2.5 px-4 text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
+                    className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-4 text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs active:scale-[0.99]"
                   >
                     <span>Bu Kod ile Açılan Kadroları Listele</span>
                     <ArrowRight className="w-4 h-4" />

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Link from 'next/link';
 import { PLACEMENT_RECORDS } from '@/data/records';
 import { QUALIFICATIONS_BY_CODE } from '@/data/qualifications';
 import { Department, PlacementRecord } from '@/types/kpss';
@@ -295,20 +296,56 @@ export default function HomePage() {
         <SeoFaqSection />
 
         {/* Official Institutional Footer */}
-        <footer className="mt-10 border-t border-slate-300 pt-5 pb-8 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="leading-relaxed text-center sm:text-left">
-            <span className="font-semibold text-slate-700">
-              T.C. KPSS Merkezi Yerleştirme ve Nitelik Kodu Sorgulama Portalı
-            </span>
-            <span className="block text-[11px] text-slate-500 mt-0.5">
-              2024–2026 Resmî ÖSYM Tercih ve Yerleştirme Sayısal Kılavuzları referans alınmıştır.
-            </span>
+        <footer className="mt-12 border-t border-slate-300 pt-6 pb-12 text-xs text-slate-600">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+            <div className="leading-relaxed text-center md:text-left max-w-md">
+              <span className="font-semibold text-slate-800 block text-sm">
+                T.C. KPSS Merkezi Yerleştirme ve Nitelik Kodu Portalı
+              </span>
+              <span className="block text-[11px] text-slate-500 mt-1">
+                2024–2026 Resmî ÖSYM Tercih ve Yerleştirme Sayısal Kılavuzları referans alınmıştır. Kamu yararına açık bilgi sistemidir.
+              </span>
+            </div>
+
+            {/* Legal & Reference Navigation */}
+            <nav aria-label="Yasal ve Yardım Bağlantıları" className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-2 text-xs font-medium">
+              <Link
+                href="/gizlilik-politikasi"
+                className="text-slate-600 hover:text-red-700 hover:underline transition-colors"
+              >
+                Gizlilik Politikası (KVKK)
+              </Link>
+              <Link
+                href="/kullanim-kosullari"
+                className="text-slate-600 hover:text-red-700 hover:underline transition-colors"
+              >
+                Kullanım Koşulları
+              </Link>
+              <a
+                href="https://www.osym.gov.tr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-600 hover:text-red-700 hover:underline transition-colors inline-flex items-center gap-1"
+              >
+                <span>Resmî ÖSYM</span>
+                <span className="text-[10px] text-slate-600 font-mono">↗</span>
+              </a>
+              <a
+                href="#results-section"
+                className="text-slate-600 hover:text-red-700 hover:underline transition-colors"
+              >
+                Sonuçlara Dön ↑
+              </a>
+            </nav>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-600 font-mono">
-            <span className="bg-white border border-slate-200 px-2 py-0.5">Lisans: KPSSP3</span>
-            <span className="bg-white border border-slate-200 px-2 py-0.5">Ön Lisans: KPSSP93</span>
-            <span className="bg-white border border-slate-200 px-2 py-0.5">Ortaöğretim: KPSSP94</span>
+          <div className="mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500 font-mono">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="bg-white border border-slate-200 px-2 py-0.5 text-slate-600">Lisans: KPSSP3</span>
+              <span className="bg-white border border-slate-200 px-2 py-0.5 text-slate-600">Ön Lisans: KPSSP93</span>
+              <span className="bg-white border border-slate-200 px-2 py-0.5 text-slate-600">Ortaöğretim: KPSSP94</span>
+            </div>
+            <span>v1.2.0 • Güvenli Kamu Açık Veri Portalı</span>
           </div>
         </footer>
       </main>

@@ -11,5 +11,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 1.0,
     },
+    {
+      url: `${siteUrl}/gizlilik-politikasi`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+    {
+      url: `${siteUrl}/kullanim-kosullari`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
   ];
 }
