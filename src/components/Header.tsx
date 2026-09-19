@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Download, BarChart3, Database, CheckCircle2, Table2 } from 'lucide-react';
+import { BarChart3, CheckCircle2, Table2 } from 'lucide-react';
 import { PlacementRecord } from '@/types/kpss';
 
 export interface HeaderProps {
-  totalRecordsCount: number;
-  filteredRecords: PlacementRecord[];
+  totalRecordsCount?: number;
+  filteredRecords?: PlacementRecord[];
   activeView: 'table' | 'analytics';
   onViewChange: (view: 'table' | 'analytics') => void;
 }
@@ -71,15 +71,9 @@ export function exportToCsv(records: PlacementRecord[]): void {
 }
 
 export default function Header({
-  totalRecordsCount,
-  filteredRecords,
   activeView,
   onViewChange,
 }: HeaderProps) {
-  const handleExport = () => {
-    exportToCsv(filteredRecords);
-  };
-
   return (
     <header className="bg-white border border-slate-300 shadow-xs mb-6">
       {/* Official Republic Accent Stripe */}
@@ -114,43 +108,6 @@ export default function Header({
                 </span>
               </div>
             </div>
-          </div>
-
-          {/* System Status Chips & Actions */}
-          <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0">
-            {/* Active Cadres Metric Chip */}
-            <div className="border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 font-medium flex items-center gap-1.5">
-              <Database className="w-3.5 h-3.5 text-slate-500" />
-              <span>Aktif Kadro:</span>
-              <strong className="text-slate-900 font-mono tabular-nums font-bold">
-                {totalRecordsCount.toLocaleString('tr-TR')}
-              </strong>
-            </div>
-
-            {/* Periods Covered Chip */}
-            <div className="border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 font-medium">
-              <span className="text-slate-500">Dönemler:</span>{' '}
-              <strong className="text-slate-900 font-mono tabular-nums">2024/1, 2024/2, 2025/1</strong>
-            </div>
-
-            {/* Dev Server Status Chip */}
-            <div className="border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs text-emerald-800 font-medium flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block animate-pulse" />
-              <span>Dev Server:</span>
-              <strong className="font-semibold">Çevrimiçi (3000)</strong>
-            </div>
-
-            {/* CSV Export Button */}
-            <button
-              type="button"
-              onClick={handleExport}
-              className="border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Aktif filtrelerle eşleşen kayıtları CSV dosyası olarak dışa aktar"
-            >
-              <Download className="w-3.5 h-3.5 text-slate-600" />
-              <span>CSV Olarak İndir</span>
-              <span className="font-mono text-slate-500 font-normal">({filteredRecords.length})</span>
-            </button>
           </div>
         </div>
       </div>

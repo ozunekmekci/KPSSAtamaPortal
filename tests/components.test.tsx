@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Header from '@/components/Header';
+import Header, { exportToCsv } from '@/components/Header';
 import SearchWorkbench from '@/components/SearchWorkbench';
 import FilterSidebar from '@/components/FilterSidebar';
 import CadreTable from '@/components/CadreTable';
@@ -23,12 +23,10 @@ describe('KPSS Portal UI Components & Interactions (Milestone 4)', () => {
 
   // 1. Header Component Tests
   describe('Header Component', () => {
-    it('renders Republic crest, title, and institutional metrics chips', () => {
+    it('renders Republic crest and official title', () => {
       const onViewChange = vi.fn();
       render(
         <Header
-          totalRecordsCount={PLACEMENT_RECORDS.length}
-          filteredRecords={sampleRecords}
           activeView="table"
           onViewChange={onViewChange}
         />
@@ -36,11 +34,6 @@ describe('KPSS Portal UI Components & Interactions (Milestone 4)', () => {
 
       expect(screen.getByText(/Türkiye Cumhuriyeti/i)).toBeInTheDocument();
       expect(screen.getByText(/KPSS Merkezi Yerleştirme ve Nitelik Kodu Portalı/i)).toBeInTheDocument();
-      expect(screen.getByText(/Aktif Kadro:/i)).toBeInTheDocument();
-      expect(screen.getByText(PLACEMENT_RECORDS.length.toLocaleString('tr-TR'))).toBeInTheDocument();
-      expect(screen.getByText(/2024\/1, 2024\/2, 2025\/1/i)).toBeInTheDocument();
-      expect(screen.getByText(/Dev Server:/i)).toBeInTheDocument();
-      expect(screen.getByText(/Çevrimiçi \(3000\)/i)).toBeInTheDocument();
 
       const h1 = screen.getByRole('heading', { level: 1 });
       expect(h1).toHaveTextContent('KPSS Merkezi Yerleştirme ve Nitelik Kodu Portalı');
@@ -66,23 +59,13 @@ describe('KPSS Portal UI Components & Interactions (Milestone 4)', () => {
       expect(onViewChange).toHaveBeenCalledWith('table');
     });
 
-    it('handles CSV export button click', () => {
+    it('handles CSV export data formatting and download logic', () => {
       const originalCreate = window.URL.createObjectURL;
       const originalRevoke = window.URL.revokeObjectURL;
       window.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
       window.URL.revokeObjectURL = vi.fn();
 
-      render(
-        <Header
-          totalRecordsCount={PLACEMENT_RECORDS.length}
-          filteredRecords={sampleRecords}
-          activeView="table"
-          onViewChange={vi.fn()}
-        />
-      );
-
-      const exportBtn = screen.getByRole('button', { name: /CSV Olarak İndir/i });
-      fireEvent.click(exportBtn);
+      exportToCsv(sampleRecords);
 
       expect(window.URL.createObjectURL).toHaveBeenCalled();
 
