@@ -51,3 +51,11 @@ Please ensure that as changes and milestones are implemented, commits and git pu
 ## 2026-09-19T16:36:20Z
 
 User Request: The user wants the Next.js development server running so they can inspect and test the website live as features are developed. Please ensure the app shell is cleanly in place, keep all subagents well-coordinated, and maintain regular git commits and pushes to origin main.
+
+## 2026-09-19T16:50:15Z
+
+CRITICAL UI DIRECTIVE: The user explicitly requested an immediate UI overhaul:
+1. STRICT LIGHT THEME: Pure crisp white / slate-50 background, formal institutional palette. Remove any dark mode styling or prefers-color-scheme dark overrides.
+2. OFFICIAL & FORMAL POSTURE: High-trust Turkish Republic public administration feel (ÖSYM / e-Devlet / Kamu Atama Portalı caliber), sober, authoritative, crisp borders, no cardocalypse.
+3. ELIMINATE AI SLOP: No kickers/eyebrows above headings, no gradient text, no glowing halos or glassmorphism, no same-size card grids.
+4. HIGH-UTILITY INTERACTIVE WORKBENCH: Dual-mode search (Bölümden Nitelik Koduna, Nitelik Kodundan Bölüme), full multivariable cadre filtering (dönem, puan, il, kurum, unvan) and official ÖSYM-style tabular data layout with tabular-nums.
