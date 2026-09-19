@@ -65,8 +65,8 @@ export default function SearchWorkbench({
 
   // Mode B: Qualification Code Search States
   const [codeQuery, setCodeQuery] = useState<string>('4531');
-  const [selectedCodeResult, setSelectedCodeResult] = useState<QualificationLookupResult | undefined>(() => {
-    return searchByQualificationCode('4531');
+  const [selectedCodeResult, setSelectedCodeResult] = useState<QualificationLookupResult | null | undefined>(() => {
+    return searchByQualificationCode('4531') ?? null;
   });
 
   // Department search computation using search-engine
@@ -76,23 +76,25 @@ export default function SearchWorkbench({
 
   // Code search computation using search-engine
   const handleCodeInputChange = (value: string) => {
-    setCodeQuery(value);
-    const trimmed = value.trim();
+    const safeValue = value ?? '';
+    setCodeQuery(safeValue);
+    const trimmed = safeValue.trim();
     if (/^\d{4}$/.test(trimmed)) {
       const result = searchByQualificationCode(trimmed);
-      setSelectedCodeResult(result);
+      setSelectedCodeResult(result ?? null);
     } else if (trimmed === '') {
-      setSelectedCodeResult(undefined);
+      setSelectedCodeResult(null);
     }
   };
 
   const handleSelectCodeChip = (code: string) => {
-    setCodeQuery(code);
-    const result = searchByQualificationCode(code);
-    setSelectedCodeResult(result);
+    const safeCode = code ?? '';
+    setCodeQuery(safeCode);
+    const result = searchByQualificationCode(safeCode);
+    setSelectedCodeResult(result ?? null);
   };
 
-  const getEducationLevelBadge = (level: EducationLevel | 'hepsi') => {
+  const getEducationLevelBadge = (level?: EducationLevel | 'hepsi' | string | null) => {
     switch (level) {
       case 'lisans':
         return <span className="px-2 py-0.5 bg-blue-50 text-blue-900 border border-blue-200 font-semibold text-[11px] uppercase">Lisans (KPSSP3)</span>;
@@ -215,11 +217,12 @@ export default function SearchWorkbench({
                     Arama kriterine uygun akademik bölüm bulunamadı.
                   </div>
                 ) : (
-                  matchedDepartments.map((dept) => {
+                  matchedDepartments.map((dept, idx) => {
                     const isSelected = selectedDept?.id === dept.id;
+                    const deptKey = dept.id || dept.ad || `matched-dept-${idx}`;
                     return (
                       <div
-                        key={dept.id}
+                        key={deptKey}
                         role="button"
                         tabIndex={0}
                         onClick={() => setSelectedDept(dept)}
@@ -327,7 +330,11 @@ export default function SearchWorkbench({
                   <div className="pt-2">
                     <button
                       type="button"
-                      onClick={() => onSelectDepartmentPlacements(selectedDept)}
+                      onClick={() => {
+                        if (selectedDept) {
+                          onSelectDepartmentPlacements(selectedDept);
+                        }
+                      }}
                       className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2.5 px-4 text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
                     >
                       <span>Bu Bölümün Atamalarını ve Taban Puanlarını Listele</span>
@@ -440,30 +447,35 @@ export default function SearchWorkbench({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                      Bu Nitelik Koduna Sahip Akademik Programlar ({selectedCodeResult.eligibleDepartments.length}):
+                      Bu Nitelik Koduna Sahip Akademik Programlar ({(selectedCodeResult.eligibleDepartments ?? []).length}):
                     </h4>
-                    {selectedCodeResult.eligibleDepartments.length > 0 && (
+                    {(selectedCodeResult.eligibleDepartments ?? []).length > 0 && (
                       <span className="text-[11px] text-slate-500">
                         Geçerli mezuniyet alanları
                       </span>
                     )}
                   </div>
 
-                  {selectedCodeResult.eligibleDepartments.length > 0 ? (
+                  {(selectedCodeResult.eligibleDepartments ?? []).length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-slate-200 p-2.5 bg-slate-50/50">
-                      {selectedCodeResult.eligibleDepartments.map((dept) => (
-                        <div
-                          key={dept.id}
-                          className="bg-white border border-slate-200 p-2 text-xs text-slate-800 flex items-center justify-between"
-                        >
-                          <span className="font-medium pr-1 line-clamp-1" title={dept.ad}>
-                            {dept.ad}
-                          </span>
-                          <span className="text-[10px] uppercase font-bold text-slate-500 font-mono flex-shrink-0">
-                            {dept.level}
-                          </span>
-                        </div>
-                      ))}
+                      {(selectedCodeResult.eligibleDepartments ?? []).map((dept, idx) => {
+                        const deptKey = dept.id || dept.ad || `eligible-dept-${idx}`;
+                        const deptTitle = dept.ad ?? 'İsimsiz Program';
+                        const deptLevel = dept.level ?? '';
+                        return (
+                          <div
+                            key={deptKey}
+                            className="bg-white border border-slate-200 p-2 text-xs text-slate-800 flex items-center justify-between"
+                          >
+                            <span className="font-medium pr-1 line-clamp-1" title={deptTitle}>
+                              {deptTitle}
+                            </span>
+                            <span className="text-[10px] uppercase font-bold text-slate-500 font-mono flex-shrink-0">
+                              {deptLevel}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="p-3 bg-slate-50 border border-slate-200 text-xs text-slate-600">
@@ -476,7 +488,11 @@ export default function SearchWorkbench({
                 <div className="pt-2">
                   <button
                     type="button"
-                    onClick={() => onSelectCodePlacements(selectedCodeResult.code)}
+                    onClick={() => {
+                      if (selectedCodeResult && selectedCodeResult.code) {
+                        onSelectCodePlacements(selectedCodeResult.code);
+                      }
+                    }}
                     className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2.5 px-4 text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
                   >
                     <span>Bu Kod ile Açılan Kadroları Listele</span>

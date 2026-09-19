@@ -242,12 +242,12 @@ export default function CadreDetailDrawer({
                             Geçerli Mezuniyet Bölümleri ({mapping.eligibleDepartments.length}):
                           </span>
                           <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
-                            {mapping.eligibleDepartments.map((d) => (
+                            {mapping.eligibleDepartments.map((d, idx) => (
                               <span
-                                key={d.id}
+                                key={d.id || d.ad || `cadre-dept-${idx}`}
                                 className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-slate-700 text-[10px]"
                               >
-                                {d.ad}
+                                {d.ad ?? 'Bölüm'}
                               </span>
                             ))}
                           </div>
