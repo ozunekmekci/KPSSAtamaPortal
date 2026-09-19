@@ -176,7 +176,7 @@ export const SPECIAL_CONDITIONS: SpecialCondition[] = [
     kod: '7322',
     baslik: 'DHMİ Kurumsal Özel Şartları',
     detay: "Devlet Hava Meydanları İşletmesi Genel Müdürlüğü kadro ve pozisyonlarına atanacak adaylar için ICAO Annex-1 kuralları, uluslararası havacılık sağlık şartları ve vardiyalı görev yapmaya mani fiziki engeli bulunmama şartı.",
-    kategori: 'kurumsal_ozel_sart' as unknown as 'vardiya_gorev',
+    kategori: 'kurumsal_ozel_sart',
     belgeGereksinimi: 'Havacılık Tıp Merkezi Onaylı Sağlık Raporu (Class 1 / Class 2 / Class 3)',
     yetkiliKurum: 'Sivil Havacılık Genel Müdürlüğü (SHGM) Yetkili Tıp Merkezleri',
     sikliklaGorulenUnvanlar: ['AIM Memuru', 'Hava Trafik Kontrolörü', 'ARFF Memuru', 'Apron Memuru'],

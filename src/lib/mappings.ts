@@ -42,7 +42,7 @@ export function getDepartmentToCodes(departmentId: string): DepartmentToCodesMap
 export function getCodeToDepartments(code: string): CodeToDepartmentsMapping | undefined {
   const qual = QUALIFICATIONS_BY_CODE[code];
   const matchingDepts = DEPARTMENTS.filter(
-    (d) => d.nitelikKodu === code || d.esdegerKodlar.includes(code)
+    (d) => d.nitelikKodu === code || d.esdegerKodlar.includes(code) || d.genelNitelikKodu === code
   );
 
   if (!qual && matchingDepts.length === 0) {
@@ -94,7 +94,7 @@ export function getAllDepartmentMappings(): DepartmentToCodesMapping[] {
 export function getAllCodeMappings(): CodeToDepartmentsMapping[] {
   return QUALIFICATION_CODES.map((qual) => {
     const matchingDepts = DEPARTMENTS.filter(
-      (d) => d.nitelikKodu === qual.kod || d.esdegerKodlar.includes(qual.kod)
+      (d) => d.nitelikKodu === qual.kod || d.esdegerKodlar.includes(qual.kod) || d.genelNitelikKodu === qual.kod
     );
     return {
       qualificationCode: qual.kod,
@@ -126,7 +126,12 @@ export function isCandidateEligibleForPost(
     gender?: 'erkek' | 'kadin';
   } = {}
 ): boolean {
-  const candidateSet = new Set(candidateCodes);
+  // Opt-out precedence: when options.includeGeneral === false, explicitly filter out
+  // general codes (4001, 3001, 2001) from candidate codes even if pre-populated.
+  const effectiveCandidateCodes = options.includeGeneral === false
+    ? candidateCodes.filter((c) => c !== '4001' && c !== '3001' && c !== '2001')
+    : candidateCodes;
+  const candidateSet = new Set(effectiveCandidateCodes);
 
   // Partition post codes
   const educationalCodes: string[] = [];
@@ -142,11 +147,13 @@ export function isCandidateEligibleForPost(
 
   // 1. Evaluate Special Conditions (AND logic)
   for (const sc of specialConditions) {
-    if (sc === '1101' && options.gender && options.gender !== 'erkek') {
-      return false; // Male only
+    // Strict gender enforcement: if post requires 1101 (Erkek) or 1103 (Kadın),
+    // reject if candidate gender does not match or if gender is not provided.
+    if (sc === '1101' && options.gender !== 'erkek') {
+      return false;
     }
-    if (sc === '1103' && options.gender && options.gender !== 'kadin') {
-      return false; // Female only
+    if (sc === '1103' && options.gender !== 'kadin') {
+      return false;
     }
     // General special condition certification check
     if (sc !== '1101' && sc !== '1103' && !candidateSet.has(sc)) {
@@ -159,12 +166,20 @@ export function isCandidateEligibleForPost(
     return true;
   }
 
+  // Tier-aware educational checks for candidate
+  const hasLisans = effectiveCandidateCodes.some((c) => c.startsWith('4') && !isSpecialConditionCode(c));
+  const hasOnlisans = effectiveCandidateCodes.some((c) => c.startsWith('3') && !isSpecialConditionCode(c));
+  const hasOrtaogretim = effectiveCandidateCodes.some((c) => c.startsWith('2') && !isSpecialConditionCode(c));
+
   // Check if candidate matches any educational code
   const hasEducationalMatch = educationalCodes.some((code) => {
     if (candidateSet.has(code)) return true;
-    // Catch-all general check
-    if (options.includeGeneral && (code === '4001' || code === '3001' || code === '2001')) {
-      return true;
+    // Tier-aware general code expansion: when options.includeGeneral: true,
+    // only match 4001 if candidate has Lisans, 3001 if Önlisans, 2001 if Ortaöğretim.
+    if (options.includeGeneral) {
+      if (code === '4001' && hasLisans) return true;
+      if (code === '3001' && hasOnlisans) return true;
+      if (code === '2001' && hasOrtaogretim) return true;
     }
     return false;
   });

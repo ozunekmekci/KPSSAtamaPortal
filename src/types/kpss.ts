@@ -176,7 +176,7 @@ export interface SpecialCondition {
   detay: string;
 
   /** Condition category */
-  kategori: 'sertifika' | 'dil' | 'ehliyet' | 'cinsiyet' | 'fiziksel_saglik' | 'vardiya_gorev' | 'guvenlik';
+  kategori: 'sertifika' | 'dil' | 'ehliyet' | 'cinsiyet' | 'fiziksel_saglik' | 'vardiya_gorev' | 'guvenlik' | 'kurumsal_ozel_sart';
 
   /** Required document / proof (e.g. "MEB Onaylı Kurs Belgesi veya Üniversite Transkripti") */
   belgeGereksinimi: string;

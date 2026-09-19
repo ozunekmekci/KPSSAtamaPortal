@@ -265,66 +265,63 @@ describe('Empirical Challenge: Bi-directional Qualification Mapping and Candidat
   // ==========================================================================
   // 6. ADVERSARIAL STRESS CHALLENGES & VULNERABILITY TESTS
   // ==========================================================================
-  describe('6. Adversarial Stress Challenges (Vulnerability Documentation)', () => {
+  describe('6. Adversarial Stress Challenges (Remediation Verification)', () => {
 
-    it('6.1 [CHALLENGE DETECTED] Cross-level catch-all leakage: Ortaöğretim candidate matches Lisans 4001 post', () => {
+    it('6.1 [REMEDIATED] Cross-level catch-all leakage prevented: Ortaöğretim candidate rejected from Lisans 4001 post', () => {
       // Ortaöğretim candidate (2061) setting includeGeneral: true
       const crossEligible = isCandidateEligibleForPost(['2061'], ['4001'], { includeGeneral: true });
       // In actual ÖSYM rules, high school graduate cannot apply for Lisans cadre!
-      // But the implementation checks: code === '4001' || code === '3001' || code === '2001'
-      // Documenting exact current behavior:
-      expect(crossEligible).toBe(true); // Demonstrates the cross-level leakage vulnerability
+      // Tier-aware expansion ensures Ortaöğretim candidate cannot match Lisans 4001:
+      expect(crossEligible).toBe(false);
     });
 
-    it('6.2 [CHALLENGE DETECTED] Empty candidate matches general posts when includeGeneral: true', () => {
+    it('6.2 [REMEDIATED] Empty candidate rejected from general posts even when includeGeneral: true', () => {
       const emptyMatches4001 = isCandidateEligibleForPost([], ['4001'], { includeGeneral: true });
-      expect(emptyMatches4001).toBe(true); // Demonstrates lack of education level check
+      expect(emptyMatches4001).toBe(false);
     });
 
-    it('6.3 [CHALLENGE DETECTED] Gender restriction bypass when options.gender is omitted', () => {
+    it('6.3 [REMEDIATED] Strict gender restriction enforcement when options.gender is omitted', () => {
       // Post requires Male (1101). Candidate does not supply gender option.
       const maleBypass = isCandidateEligibleForPost(['4531'], ['4531', '1101']);
-      // Implementation skips check if options.gender is undefined:
-      expect(maleBypass).toBe(true); // Demonstrates gender check bypass
+      expect(maleBypass).toBe(false);
 
       const femaleBypass = isCandidateEligibleForPost(['4531'], ['4531', '1103']);
-      expect(femaleBypass).toBe(true); // Demonstrates gender check bypass
+      expect(femaleBypass).toBe(false);
     });
 
-    it('6.4 [CHALLENGE DETECTED] General post reverse lookup returns 0 departments', () => {
+    it('6.4 [REMEDIATED] General post reverse lookup returns all tier departments', () => {
       const rev4001 = getCodeToDepartments('4001');
       expect(rev4001).toBeDefined();
-      // Should semantically cover all Lisans departments (34 departments), but returns 0:
-      expect(rev4001?.eligibleDepartments.length).toBe(0);
+      // Semantically covers all Lisans departments (34 departments):
+      expect(rev4001?.eligibleDepartments.length).toBe(34);
 
       const rev3001 = getCodeToDepartments('3001');
-      expect(rev3001?.eligibleDepartments.length).toBe(0);
+      expect(rev3001?.eligibleDepartments.length).toBe(19);
 
       const rev2001 = getCodeToDepartments('2001');
-      expect(rev2001?.eligibleDepartments.length).toBe(0);
+      expect(rev2001?.eligibleDepartments.length).toBe(10);
     });
 
-    it('6.5 [CHALLENGE DETECTED] Discrepancy between getDepartmentsByCode and getCodeToDepartments on equivalent codes', () => {
+    it('6.5 [REMEDIATED] Discrepancy between getDepartmentsByCode and getCodeToDepartments resolved on equivalent codes', () => {
       // '4539' is Yazılım Mühendisliği (primary) and Bilgisayar Mühendisliği (equivalent)
       const fromMappings = getCodeToDepartments('4539');
       const fromData = getDepartmentsByCode('4539');
 
-      // getCodeToDepartments includes equivalent departments (3 depts)
+      // Both should include equivalent departments (3 depts)
       expect(fromMappings?.eligibleDepartments.length).toBe(3);
-      // getDepartmentsByCode only checks primary nitelikKodu (2 depts)
-      expect(fromData.length).toBe(2);
-      expect(fromData.some((d) => d.id === 'bilgisayar-muhendisligi')).toBe(false);
+      expect(fromData.length).toBe(3);
+      expect(fromData.some((d) => d.id === 'bilgisayar-muhendisligi')).toBe(true);
     });
 
-    it('6.6 [CHALLENGE DETECTED] Opt-out failure when 4001 is already present in candidateCodes', () => {
+    it('6.6 [REMEDIATED] Opt-out precedence verified when 4001 is already present in candidateCodes', () => {
       // getDepartmentToCodes returns eligibleQualificationCodes with 4001 included
       const mapping = getDepartmentToCodes('bilgisayar-muhendisligi');
       const candidateCodes = mapping!.eligibleQualificationCodes; // contains '4001'
 
       // User unchecks "includeGeneral" (wants only specific CS posts, not 4001 general posts)
       const eligible = isCandidateEligibleForPost(candidateCodes, ['4001'], { includeGeneral: false });
-      // Because candidateSet has '4001', it returns true, ignoring includeGeneral: false!
-      expect(eligible).toBe(true);
+      // Explicit opt-out filters out 4001:
+      expect(eligible).toBe(false);
     });
   });
 });

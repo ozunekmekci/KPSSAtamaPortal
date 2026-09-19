@@ -713,8 +713,18 @@ export const DEPARTMENTS_BY_ID: Record<string, Department> = Object.fromEntries(
 
 export const DEPARTMENTS_BY_CODE: Record<string, Department[]> = DEPARTMENTS.reduce(
   (acc, dept) => {
+    // Primary code
     if (!acc[dept.nitelikKodu]) acc[dept.nitelikKodu] = [];
-    acc[dept.nitelikKodu].push(dept);
+    if (!acc[dept.nitelikKodu].includes(dept)) {
+      acc[dept.nitelikKodu].push(dept);
+    }
+    // Equivalent codes
+    for (const es of dept.esdegerKodlar) {
+      if (!acc[es]) acc[es] = [];
+      if (!acc[es].includes(dept)) {
+        acc[es].push(dept);
+      }
+    }
     return acc;
   },
   {} as Record<string, Department[]>

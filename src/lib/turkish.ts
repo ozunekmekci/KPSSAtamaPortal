@@ -13,6 +13,7 @@
 export function normalizeTr(text: string): string {
   if (!text) return '';
   return text
+    .normalize('NFC')
     .replace(/İ/g, 'i')
     .replace(/I/g, 'ı')
     .toLocaleLowerCase('tr-TR')
@@ -26,6 +27,7 @@ export function normalizeTr(text: string): string {
 export function normalizeTrSearch(text: string): string {
   if (!text) return '';
   return text
+    .normalize('NFC')
     .replace(/İ/g, 'i')
     .replace(/I/g, 'ı')
     .toLocaleLowerCase('tr-TR')
@@ -47,6 +49,7 @@ export function normalizeTrSearch(text: string): string {
 export function toTurkishUpper(text: string): string {
   if (!text) return '';
   return text
+    .normalize('NFC')
     .replace(/i/g, 'İ')
     .replace(/ı/g, 'I')
     .toLocaleUpperCase('tr-TR')
@@ -59,6 +62,8 @@ export function toTurkishUpper(text: string): string {
 export function toTurkishTitle(text: string): string {
   if (!text) return '';
   return text
+    .normalize('NFC')
+    .trim()
     .split(/\s+/)
     .map((word) => {
       if (!word) return '';

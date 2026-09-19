@@ -327,82 +327,82 @@ function runSuite5() {
 function runSuite6() {
   const suite = 'Suite 6: Adversarial Stress Challenges';
 
-  // 6.1 Cross-education-level catch-all leakage
+  // 6.1 Cross-education-level catch-all leakage prevented
   const highSchoolToLisans = isCandidateEligibleForPost(['2061'], ['4001'], { includeGeneral: true });
   assert(
     suite,
-    '6.1 [VULNERABILITY] Cross-level: High school candidate (2061) matches Lisans 4001 post under current algebra',
-    highSchoolToLisans === true,
-    true,
+    '6.1 [REMEDIATED] Cross-level: High school candidate (2061) rejected from Lisans 4001 post',
+    highSchoolToLisans === false,
+    false,
     highSchoolToLisans,
-    'Finding: includeGeneral checks if post has 4001/3001/2001 without checking candidate education level'
+    'Remediation: Tier-aware expansion ensures Ortaöğretim candidate cannot match Lisans 4001 post'
   );
 
   const onlisansToLisans = isCandidateEligibleForPost(['3003'], ['4001'], { includeGeneral: true });
   assert(
     suite,
-    '6.1 [VULNERABILITY] Cross-level: Önlisans candidate (3003) matches Lisans 4001 post under current algebra',
-    onlisansToLisans === true,
-    true,
+    '6.1 [REMEDIATED] Cross-level: Önlisans candidate (3003) rejected from Lisans 4001 post',
+    onlisansToLisans === false,
+    false,
     onlisansToLisans,
-    'Finding: Önlisans candidate falsely allowed into Lisans central post'
+    'Remediation: Önlisans candidate cannot match Lisans 4001 central post'
   );
 
-  // 6.2 Empty candidate matching general posts
+  // 6.2 Empty candidate matching general posts prevented
   const emptyToLisans = isCandidateEligibleForPost([], ['4001'], { includeGeneral: true });
   assert(
     suite,
-    '6.2 [VULNERABILITY] Empty candidate codes matches 4001 post when includeGeneral: true',
-    emptyToLisans === true,
-    true,
+    '6.2 [REMEDIATED] Empty candidate codes rejected from 4001 post even when includeGeneral: true',
+    emptyToLisans === false,
+    false,
     emptyToLisans,
-    'Finding: Candidate with no degree code matches 4001'
+    'Remediation: Candidate without degree cannot match 4001'
   );
 
-  // 6.3 Gender bypass when options.gender is omitted
+  // 6.3 Strict gender enforcement when gender is omitted
   const maleBypass = isCandidateEligibleForPost(['4531'], ['4531', '1101']);
   assert(
     suite,
-    '6.3 [VULNERABILITY] Post requiring 1101 (Male) passes when gender is omitted from options',
-    maleBypass === true,
-    true,
+    '6.3 [REMEDIATED] Post requiring 1101 (Male) rejected when gender is omitted from options',
+    maleBypass === false,
+    false,
     maleBypass,
-    'Finding: Loop condition `sc === "1101" && options.gender && options.gender !== "erkek"` evaluates false when gender is undefined'
+    'Remediation: Strict gender check rejects candidates when required gender is missing or mismatched'
   );
 
-  // 6.4 Reverse mapping on general codes
+  // 6.4 Reverse mapping on general codes returns all tier departments
   const rev4001 = getCodeToDepartments('4001');
   assert(
     suite,
-    '6.4 [VULNERABILITY] Reverse lookup for general code 4001 returns 0 departments',
-    rev4001?.eligibleDepartments.length === 0,
-    0,
+    '6.4 [REMEDIATED] Reverse lookup for general code 4001 returns all 34 Lisans departments',
+    rev4001?.eligibleDepartments.length === 34,
+    34,
     rev4001?.eligibleDepartments.length,
-    'Finding: DEPARTMENTS filter checks nitelikKodu and esdegerKodlar, omitting genelNitelikKodu'
+    'Remediation: DEPARTMENTS filter checks genelNitelikKodu so 4001 resolves to all Lisans departments'
   );
 
-  // 6.5 Discrepancy between getDepartmentsByCode and getCodeToDepartments
+  // 6.5 Discrepancy between getDepartmentsByCode and getCodeToDepartments resolved
   const fromMappings = getCodeToDepartments('4539');
   const fromData = getDepartmentsByCode('4539');
   assert(
     suite,
-    '6.5 [VULNERABILITY] Inconsistency on code 4539: getCodeToDepartments (3) vs getDepartmentsByCode (2)',
-    fromMappings?.eligibleDepartments.length !== fromData.length,
+    '6.5 [REMEDIATED] Consistency on code 4539: getCodeToDepartments (3) matches getDepartmentsByCode (3)',
+    fromMappings?.eligibleDepartments.length === fromData.length && fromData.length === 3,
     true,
-    fromMappings?.eligibleDepartments.length !== fromData.length,
-    'Finding: getDepartmentsByCode ignores esdegerKodlar'
+    fromMappings?.eligibleDepartments.length === fromData.length,
+    'Remediation: getDepartmentsByCode correctly indexes both primary and equivalent codes'
   );
 
-  // 6.6 Opt-out failure when 4001 in candidateCodes
+  // 6.6 Opt-out precedence verified
   const m = getDepartmentToCodes('bilgisayar-muhendisligi');
   const optOutEligible = isCandidateEligibleForPost(m!.eligibleQualificationCodes, ['4001'], { includeGeneral: false });
   assert(
     suite,
-    '6.6 [VULNERABILITY] Opt-out failure: candidateSet.has(4001) overrides includeGeneral: false',
-    optOutEligible === true,
-    true,
+    '6.6 [REMEDIATED] Opt-out precedence: candidate rejected from 4001 when includeGeneral: false even if 4001 was pre-populated',
+    optOutEligible === false,
+    false,
     optOutEligible,
-    'Finding: candidateSet.has(code) executes before includeGeneral check'
+    'Remediation: Explicit includeGeneral: false filters out general codes before matching'
   );
 }
 

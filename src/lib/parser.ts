@@ -45,8 +45,11 @@ export function mapHeaderToField(header: string): string | null {
   if (/^(kadro\s*unvani|unvan|pozisyon\s*unvani)$/.test(normalized) || normalized.includes('unvan')) {
     return 'kadroUnvani';
   }
-  if (/^(hizmet\s*sinifi|sinif|sinifi|teskilat)$/.test(normalized)) {
+  if (/^(hizmet\s*sinifi|sinif|sinifi)$/.test(normalized)) {
     return 'hizmetSinifi';
+  }
+  if (/^(teskilat|teskilati)$/.test(normalized) || normalized.includes('teskilat')) {
+    return 'teskilat';
   }
   if (/^(derece|kadro\s*derecesi)$/.test(normalized)) {
     return 'derece';
@@ -54,14 +57,14 @@ export function mapHeaderToField(header: string): string | null {
   if (/^(il|sehir|il\s*adi|birim|gorev\s*yeri)$/.test(normalized)) {
     return 'sehir';
   }
+  if (/^(bos\s*kalan|bos\s*kontenjan|bos)$/.test(normalized) || normalized.includes('bos kalan') || normalized.includes('bos kontenjan')) {
+    return 'bosKalan';
+  }
   if (/^(kontenjan|sayi|kadro\s*sayisi|adet)$/.test(normalized) || normalized.includes('kontenjan')) {
     return 'kontenjan';
   }
   if (/^(yerlesen|yerlesen\s*sayisi|atanan)$/.test(normalized) || normalized.includes('yerlesen')) {
     return 'yerlesen';
-  }
-  if (/^(bos\s*kalan|bos\s*kontenjan|bos)$/.test(normalized)) {
-    return 'bosKalan';
   }
   if (/^(taban\s*puan|en\s*kucuk\s*puan|min\s*puan|taban)$/.test(normalized) || normalized.includes('en kucuk')) {
     return 'tabanPuan';
@@ -84,13 +87,21 @@ export function parseScore(val: unknown, yerlesenCount: number): number | null {
     return null;
   }
   const str = String(val).trim();
-  if (str === '' || str === '-' || str === '--' || str === '---' || str === '0' || str === '0,00000') {
+  if (
+    str === '' ||
+    str === '-' ||
+    str === '--' ||
+    str === '---' ||
+    str === '0' ||
+    str === '0,00000' ||
+    str === '0.00000'
+  ) {
     return null;
   }
 
   const normalized = str.replace(/\s+/g, '').replace(',', '.');
   const num = parseFloat(normalized);
-  if (isNaN(num)) return null;
+  if (isNaN(num) || num === 0) return null;
 
   // Round to 5 decimal places (standard ÖSYM score precision)
   return Math.round(num * 100000) / 100000;
@@ -108,7 +119,7 @@ export function extractQualificationCodes(rawCodes: unknown): {
     return { all: [], mezuniyet: [], ozelSartlar: [] };
   }
 
-  const str = String(rawCodes);
+  const str = String(rawCodes).replace(/_/g, ' ');
   const matches = str.match(/\b\d{4}\b/g) || [];
   const uniqueCodes = Array.from(new Set(matches));
 
@@ -134,8 +145,8 @@ export function extractQualificationCodes(rawCodes: unknown): {
  * Parses raw CSV content (auto-detecting comma, semicolon, or tab)
  */
 export function parseCsvRows(csvContent: string): Record<string, string>[] {
-  // Check first line to detect delimiter
-  const firstLine = csvContent.split('\n')[0] || '';
+  // Check first non-empty line to detect delimiter
+  const firstLine = csvContent.split(/\r?\n/).map((l) => l.trim()).find(Boolean) || '';
   let delimiter = ',';
   const semicolonCount = (firstLine.match(/;/g) || []).length;
   const tabCount = (firstLine.match(/\t/g) || []).length;
