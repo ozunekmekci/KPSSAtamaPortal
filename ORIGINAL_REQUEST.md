@@ -47,3 +47,7 @@ Integrity mode: demo
 User Directive: The project must be pushed to GitHub at https://github.com/ozunekmekci/KPSSAtamaPortal.git.
 Git origin is configured to https://github.com/ozunekmekci/KPSSAtamaPortal.git (branch main), and github credentials are authenticated.
 Please ensure that as changes and milestones are implemented, commits and git pushes to origin main are performed regularly.
+
+## 2026-09-19T16:36:20Z
+
+User Request: The user wants the Next.js development server running so they can inspect and test the website live as features are developed. Please ensure the app shell is cleanly in place, keep all subagents well-coordinated, and maintain regular git commits and pushes to origin main.
