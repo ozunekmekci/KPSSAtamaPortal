@@ -5,10 +5,11 @@
   --foreground: #0f172a;
   --surface: #ffffff;
   --surface-border: #e2e8f0;
-  --primary: #1e3a8a;
-  --primary-hover: #1e40af;
+  --primary: #b91c1c;
+  --primary-hover: #991b1b;
 }
 
+/* Strict Light Theme Enforced - No Dark Mode Overrides */
 html, body {
   background-color: #f8fafc;
   color: #0f172a;
@@ -17,33 +18,34 @@ html, body {
   min-height: 100vh;
 }
 
-/* Impeccable Operate Mode: Tabular numerals for data precision */
+/* Impeccable Operate Mode: Tabular numerals for high-precision data layout */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
 /* Official scrollbars matching light institutional palette */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
+/* Text Selection and Focus Rings */
 ::selection {
-  background-color: #dbeafe;
-  color: #1e3a8a;
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 :focus-visible {
-  outline: 2px solid #1e3a8a;
+  outline: 2px solid #b91c1c;
   outline-offset: 1px;
 }

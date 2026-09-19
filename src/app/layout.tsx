@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr" className="light" style={{ colorScheme: 'light' }}>
-      <body className="min-h-screen bg-slate-100/70 text-slate-900 antialiased font-sans">
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased font-sans">
         {children}
       </body>
     </html>
