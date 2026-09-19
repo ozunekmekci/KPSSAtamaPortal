@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { EducationLevel, PlacementPeriod, PlacementRecord } from '@/types/kpss';
 import { ExtendedFilterCriteria, FilterFacets } from '@/lib/filter-engine';
+import { normalizeTrSearch } from '@/lib/turkish';
 
 export interface FilterSidebarProps {
   criteria: ExtendedFilterCriteria;
@@ -58,8 +59,8 @@ export default function FilterSidebar({
   const [citySearch, setCitySearch] = useState('');
   const filteredCities = useMemo(() => {
     if (!citySearch.trim()) return facets.cities;
-    const q = citySearch.toLowerCase();
-    return facets.cities.filter((c) => c.toLowerCase().includes(q));
+    const qNorm = normalizeTrSearch(citySearch);
+    return facets.cities.filter((c) => normalizeTrSearch(c).includes(qNorm));
   }, [facets.cities, citySearch]);
 
   // Real-time facet counts calculation based on current level

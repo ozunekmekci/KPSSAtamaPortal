@@ -443,7 +443,7 @@ export function filterCriteriaToSearchParams(
   }
 
   if (criteria.kurumlar && criteria.kurumlar.length > 0) {
-    params.set('kurumlar', criteria.kurumlar.join(','));
+    params.set('kurumlar', criteria.kurumlar.join('|'));
   }
 
   if (criteria.unvanlar && criteria.unvanlar.length > 0) {
@@ -557,11 +557,11 @@ export function searchParamsToFilterCriteria(
     }
   }
 
-  // Institutions
+  // Institutions (pipe delimiter to preserve institutions containing commas)
   const kurumlarRaw = searchParams.get('kurumlar');
   if (kurumlarRaw) {
     const list = kurumlarRaw
-      .split(',')
+      .split('|')
       .map((k) => k.trim())
       .filter(Boolean);
     if (list.length > 0) {

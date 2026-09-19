@@ -262,10 +262,7 @@ export default function SearchWorkbench({
                   {/* Title & Degree Level */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200 pb-3">
                     <div>
-                      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                        Seçilen Akademik Program:
-                      </span>
-                      <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900">
                         {selectedDept.ad}
                       </h3>
                       {selectedDept.fakulte && (

@@ -41,6 +41,9 @@ describe('KPSS Portal UI Components & Interactions (Milestone 4)', () => {
       expect(screen.getByText(/2024\/1, 2024\/2, 2025\/1/i)).toBeInTheDocument();
       expect(screen.getByText(/Dev Server:/i)).toBeInTheDocument();
       expect(screen.getByText(/Çevrimiçi \(3000\)/i)).toBeInTheDocument();
+
+      const h1 = screen.getByRole('heading', { level: 1 });
+      expect(h1).toHaveTextContent('KPSS Merkezi Yerleştirme ve Nitelik Kodu Portalı');
     });
 
     it('toggles view between table and analytics', () => {
@@ -231,6 +234,23 @@ describe('KPSS Portal UI Components & Interactions (Milestone 4)', () => {
       fireEvent.click(resetBtn);
       expect(onReset).toHaveBeenCalled();
     });
+
+    it('filters cities using Turkish diacritic-resilient search (izmir matches İZMİR)', () => {
+      render(
+        <FilterSidebar
+          criteria={{ page: 1, pageSize: 20 }}
+          facets={{ ...facets, cities: ['İZMİR', 'İSTANBUL', 'ANKARA'] }}
+          allRecords={sampleRecords}
+          onCriteriaChange={vi.fn()}
+          onReset={vi.fn()}
+        />
+      );
+
+      const cityInput = screen.getByPlaceholderText(/İl adına göre ara.../i);
+      fireEvent.change(cityInput, { target: { value: 'izmir' } });
+      expect(screen.getByText('İZMİR')).toBeInTheDocument();
+      expect(screen.queryByText('ANKARA')).not.toBeInTheDocument();
+    });
   });
 
   // 4. CadreTable Component Tests
@@ -335,6 +355,31 @@ describe('KPSS Portal UI Components & Interactions (Milestone 4)', () => {
       const nextBtn = screen.getByRole('button', { name: /Sonraki/i });
       fireEvent.click(nextBtn);
       expect(onPageChange).toHaveBeenCalledWith(3);
+    });
+
+    it('clamps currentPage safely when result count drops below current page', () => {
+      render(
+        <CadreTable
+          records={[]}
+          allFilteredRecordsCount={5}
+          totalQuota={10}
+          totalPlaced={10}
+          totalVacant={0}
+          avgMinScore="80.0000"
+          currentPage={5}
+          pageSize={20}
+          sortBy="tabanPuanAsc"
+          onSortChange={vi.fn()}
+          onPageChange={vi.fn()}
+          onPageSizeChange={vi.fn()}
+          onSelectCadre={vi.fn()}
+          onSelectCode={vi.fn()}
+        />
+      );
+      const textDiv = screen.getByText(/arası listeleniyor/i);
+      expect(textDiv).toHaveTextContent(/Toplam 5 kadrodan/i);
+      expect(textDiv).toHaveTextContent(/1 - 5/);
+      expect(screen.getByText('1 / 1')).toBeInTheDocument();
     });
   });
 

@@ -102,16 +102,17 @@ export default function Header({
             </div>
 
             <div>
-              <span className="text-[11px] font-bold tracking-wider text-red-800 uppercase block">
-                Türkiye Cumhuriyeti Kamu Görevlerine İlk Defa Atanacaklar İçin
-              </span>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-0.5">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
                 KPSS Merkezi Yerleştirme ve Nitelik Kodu Portalı
               </h1>
-              <p className="text-xs text-slate-600 mt-1 max-w-3xl">
-                2024–2026 B Grubu Lisans (KPSSP3), Ön Lisans (KPSSP93) ve Ortaöğretim (KPSSP94) resmi yerleştirme kadroları,
-                çift yönlü akademik bölüm ve nitelik kodu sorgulama ve taban puan analitiği.
-              </p>
+              <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold bg-red-50 text-red-900 border border-red-200">
+                  Türkiye Cumhuriyeti Kamu Görevlerine İlk Defa Atanacaklar İçin
+                </span>
+                <span className="text-xs text-slate-600">
+                  2024–2026 B Grubu Lisans (KPSSP3), Ön Lisans (KPSSP93) ve Ortaöğretim (KPSSP94) resmi yerleştirme kadroları ve taban puan analitiği.
+                </span>
+              </div>
             </div>
           </div>
 

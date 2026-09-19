@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { PLACEMENT_RECORDS } from '@/data/records';
+import { QUALIFICATIONS_BY_CODE } from '@/data/qualifications';
 import { Department, PlacementRecord } from '@/types/kpss';
 import {
   ExtendedFilterCriteria,
@@ -93,8 +94,9 @@ export default function HomePage() {
   }, [criteria]);
 
   // Paginated records for current page display
-  const currentPage = criteria.page || 1;
   const pageSize = criteria.pageSize || 20;
+  const totalPages = Math.max(1, Math.ceil(allFilteredRecords.length / pageSize));
+  const currentPage = Math.min(Math.max(1, criteria.page || 1), totalPages);
   const paginatedRecords = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     return allFilteredRecords.slice(start, start + pageSize);
@@ -149,8 +151,17 @@ export default function HomePage() {
 
   // Handler: One-click "Bu Kod ile Açılan Kadroları Listele" from SearchWorkbench
   const handleSelectCodePlacements = useCallback((code: string) => {
+    const qual = QUALIFICATIONS_BY_CODE[code];
+    const resolvedLevel =
+      qual?.ogrenimDuzeyi === 'lisans' ||
+      qual?.ogrenimDuzeyi === 'onlisans' ||
+      qual?.ogrenimDuzeyi === 'ortaogretim'
+        ? qual.ogrenimDuzeyi
+        : undefined;
+
     setCriteria((prev) => ({
       ...prev,
+      ogrenimDuzeyi: resolvedLevel,
       nitelikKodlari: [code],
       page: 1,
     }));

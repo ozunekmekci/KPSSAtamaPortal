@@ -117,7 +117,7 @@ export default function AnalyticsPanel({ records, onSelectCadre }: AnalyticsPane
             {/* SUB-TAB 1: DÖNEM PUAN TRENDLERİ */}
             {activeSubTab === 'trends' && (
               <div className="space-y-6">
-                <div className="border-l-3 border-red-700 pl-3">
+                <div className="border-b border-slate-200 pb-1.5">
                   <h3 className="text-xs font-bold text-slate-900 uppercase">
                     Dönemler Arası Taban Puan Değişim Seyri (2024 - 2026)
                   </h3>
@@ -242,7 +242,7 @@ export default function AnalyticsPanel({ records, onSelectCadre }: AnalyticsPane
             {/* SUB-TAB 2: KONTENJAN VE DOLULUK ANALİZİ */}
             {activeSubTab === 'quota' && (
               <div className="space-y-6">
-                <div className="border-l-3 border-red-700 pl-3">
+                <div className="border-b border-slate-200 pb-1.5">
                   <h3 className="text-xs font-bold text-slate-900 uppercase">
                     Öğrenim Düzeylerine Göre Kontenjan ve Doluluk Analizi
                   </h3>
@@ -346,7 +346,7 @@ export default function AnalyticsPanel({ records, onSelectCadre }: AnalyticsPane
             {/* SUB-TAB 3: UÇ DEĞERLER (EN DÜŞÜK VE EN YÜKSEK KAPATAN KADROLAR) */}
             {activeSubTab === 'extremes' && (
               <div className="space-y-6">
-                <div className="border-l-3 border-red-700 pl-3">
+                <div className="border-b border-slate-200 pb-1.5">
                   <h3 className="text-xs font-bold text-slate-900 uppercase">
                     En Düşük ve En Yüksek Taban Puanla Kapatan Kadrolar (Uç Değerler)
                   </h3>
@@ -444,7 +444,7 @@ export default function AnalyticsPanel({ records, onSelectCadre }: AnalyticsPane
             {/* SUB-TAB 4: TABAN PUAN DAĞILIM HİSTOGRAMI */}
             {activeSubTab === 'histogram' && (
               <div className="space-y-6">
-                <div className="border-l-3 border-red-700 pl-3">
+                <div className="border-b border-slate-200 pb-1.5">
                   <h3 className="text-xs font-bold text-slate-900 uppercase">
                     Taban Puan Frekans Dağılım Histogramı (8 Aralık)
                   </h3>

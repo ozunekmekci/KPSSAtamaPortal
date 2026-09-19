@@ -47,6 +47,7 @@ export default function CadreTable({
   onSelectCode,
 }: CadreTableProps) {
   const totalPages = Math.max(1, Math.ceil(allFilteredRecordsCount / pageSize));
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
 
   // Sort helper
   const handleSortClick = (field: 'puan' | 'kontenjan' | 'kurum' | 'unvan') => {
@@ -328,11 +329,11 @@ export default function CadreTable({
         <div>
           Toplam <strong className="text-slate-900 font-mono font-bold tabular-nums">{allFilteredRecordsCount}</strong> kadrodan{' '}
           <strong className="text-slate-900 font-mono font-bold tabular-nums">
-            {allFilteredRecordsCount > 0 ? (currentPage - 1) * pageSize + 1 : 0}
+            {allFilteredRecordsCount > 0 ? (safePage - 1) * pageSize + 1 : 0}
           </strong>{' '}
           -{' '}
           <strong className="text-slate-900 font-mono font-bold tabular-nums">
-            {Math.min(currentPage * pageSize, allFilteredRecordsCount)}
+            {Math.min(safePage * pageSize, allFilteredRecordsCount)}
           </strong>{' '}
           arası listeleniyor.
         </div>
@@ -341,8 +342,8 @@ export default function CadreTable({
         <div className="flex items-center gap-1 self-center sm:self-auto">
           <button
             type="button"
-            disabled={currentPage <= 1}
-            onClick={() => onPageChange(currentPage - 1)}
+            disabled={safePage <= 1}
+            onClick={() => onPageChange(safePage - 1)}
             className="px-2.5 py-1 border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-slate-800 flex items-center gap-1 transition-colors cursor-pointer"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
@@ -350,13 +351,13 @@ export default function CadreTable({
           </button>
 
           <span className="px-3 py-1 border border-slate-300 bg-slate-100 font-mono font-bold text-slate-900 tabular-nums">
-            {currentPage} / {totalPages}
+            {safePage} / {totalPages}
           </span>
 
           <button
             type="button"
-            disabled={currentPage >= totalPages}
-            onClick={() => onPageChange(currentPage + 1)}
+            disabled={safePage >= totalPages}
+            onClick={() => onPageChange(safePage + 1)}
             className="px-2.5 py-1 border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-slate-800 flex items-center gap-1 transition-colors cursor-pointer"
           >
             <span>Sonraki</span>

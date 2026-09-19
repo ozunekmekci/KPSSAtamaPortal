@@ -330,23 +330,16 @@ describe('Milestone 4 Adversarial Empirical Challenge Suite', () => {
 
       const citySearchInput = screen.getByPlaceholderText(/İl adına göre ara.../i);
 
-      // VULNERABILITY EVALUATION:
-      // FilterSidebar.tsx lines 60-63:
-      // const q = citySearch.toLowerCase();
-      // return facets.cities.filter((c) => c.toLowerCase().includes(q));
-      // In JS, 'İZMİR'.toLowerCase() produces 'i\u0307zmir' (with combining dot).
-      // If user types standard lowercase 'izmir', it does NOT match 'i\u0307zmir'!
+      // VERIFIED FIX:
+      // With normalizeTrSearch, lowercase 'izmir' properly matches uppercase 'İZMİR'
       fireEvent.change(citySearchInput, { target: { value: 'izmir' } });
       const izmirMatches = screen.queryAllByText('İZMİR');
-      const isVulnerable = izmirMatches.length === 0;
+      expect(izmirMatches.length).toBeGreaterThanOrEqual(1);
 
-      // When user types uppercase 'İZMİR', it DOES match:
+      // When user types uppercase 'İZMİR', it ALSO matches:
       fireEvent.change(citySearchInput, { target: { value: 'İZMİR' } });
       const izmirUpperMatches = screen.queryAllByText('İZMİR');
       expect(izmirUpperMatches.length).toBeGreaterThanOrEqual(1);
-
-      // Document empirical finding:
-      expect(isVulnerable).toBe(true); // Confirmed diacritics bug in FilterSidebar!
     });
 
     it('3.3 Free text query in filter-engine handles complex Turkish sentences with diacritics', () => {
@@ -502,14 +495,11 @@ describe('Milestone 4 Adversarial Empirical Challenge Suite', () => {
       // CadreTable displays empty state because records is empty:
       expect(screen.getByText(/Seçilen kriterlere uygun kadro bulunamadı/i)).toBeInTheDocument();
 
-      // Look at the pagination summary text:
-      // Line 332: (currentPage - 1) * pageSize + 1 = (5 - 1) * 20 + 1 = 81
-      // Line 336: Math.min(currentPage * pageSize, allFilteredRecordsCount) = Math.min(100, 5) = 5
-      // Text becomes: "Toplam 5 kadrodan 81 - 5 arası listeleniyor."!
-      // This is an empirical formatting anomaly!
+      // VERIFIED FIX:
+      // safePage clamps currentPage to totalPages (1), preventing the 81 - 5 anomaly:
       const textDiv = screen.getByText(/arası listeleniyor/i);
-      expect(textDiv).toHaveTextContent(/81/);
-      expect(screen.getByText('5 / 1')).toBeInTheDocument();
+      expect(textDiv).toHaveTextContent(/1 - 5/);
+      expect(screen.getByText('1 / 1')).toBeInTheDocument();
     });
 
     it('5.2 FilterSidebar interactions always reset page to 1', () => {

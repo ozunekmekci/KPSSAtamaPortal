@@ -427,6 +427,19 @@ describe('Filter Engine — Multi-Criteria Filtering', () => {
       expect(parsed).toEqual(original);
     });
 
+    it('serializes and round-trips institution names containing commas using pipe delimiter', () => {
+      const instWithComma = 'ÇEVRE, ŞEHİRCİLİK VE İKLİM DEĞİŞİKLİĞİ BAKANLIĞI';
+      const original: ExtendedFilterCriteria = {
+        kurumlar: ['DEVLET HAVA MEYDANLARI', instWithComma],
+      };
+
+      const params = filterCriteriaToSearchParams(original);
+      expect(params.get('kurumlar')).toBe(`DEVLET HAVA MEYDANLARI|${instWithComma}`);
+
+      const parsed = searchParamsToFilterCriteria(params);
+      expect(parsed.kurumlar).toEqual(['DEVLET HAVA MEYDANLARI', instWithComma]);
+    });
+
     it('parses raw query string and handles invalid parameter values gracefully', () => {
       const queryString =
         '?ogrenimDuzeyi=onlisans&minPuan=abc&maxPuan=85.5&sadeceBosKalanlar=1&q=tekniker&page=invalid';
