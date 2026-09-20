@@ -97,7 +97,7 @@ describe('Empirical Challenge: Bi-directional Qualification Mapping and Candidat
 
     it('1.5 All departments have complete, non-redundant eligibleQualificationCodes', () => {
       const all = getAllDepartmentMappings();
-      expect(all.length).toBe(68);
+      expect(all.length).toBe(69);
       for (const m of all) {
         // Set size must match array length (no duplicate codes)
         const uniqueSet = new Set(m.eligibleQualificationCodes);
@@ -296,7 +296,7 @@ describe('Empirical Challenge: Bi-directional Qualification Mapping and Candidat
       expect(rev4001?.eligibleDepartments.length).toBe(38);
 
       const rev3001 = getCodeToDepartments('3001');
-      expect(rev3001?.eligibleDepartments.length).toBe(19);
+      expect(rev3001?.eligibleDepartments.length).toBe(20);
 
       const rev2001 = getCodeToDepartments('2001');
       expect(rev2001?.eligibleDepartments.length).toBe(11);

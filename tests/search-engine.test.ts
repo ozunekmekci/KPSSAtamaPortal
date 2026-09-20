@@ -316,21 +316,21 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
   describe('"Atamaları Göster" Resolvers', () => {
     it('returns authentic placement records for department ID "bilgisayar-muhendisligi"', () => {
       const records = getPlacementsForDepartment('bilgisayar-muhendisligi');
-      expect(records.length).toBe(23);
+      expect(records.length).toBe(67);
       expect(records.every((r) => r.nitelikKodlari.includes('4531') || r.nitelikKodlari.includes('4539'))).toBe(true);
     });
 
     it('expands with general code 4001 when includeGeneral is true', () => {
       const specific = getPlacementsForDepartment('bilgisayar-muhendisligi', { includeGeneral: false });
       const withGeneral = getPlacementsForDepartment('bilgisayar-muhendisligi', { includeGeneral: true });
-      expect(specific.length).toBe(23);
-      expect(withGeneral.length).toBe(24); // 23 specific + 1 general 4001
+      expect(specific.length).toBe(67);
+      expect(withGeneral.length).toBe(68); // 67 specific + 1 general 4001
       expect(withGeneral.length).toBeGreaterThan(specific.length);
     });
 
     it('resolves by qualification code "4531" in getPlacementsForDepartment', () => {
       const records = getPlacementsForDepartment('4531');
-      expect(records.length).toBe(23);
+      expect(records.length).toBe(67);
       expect(records.every((r) => r.nitelikKodlari.includes('4531'))).toBe(true);
     });
 
@@ -363,7 +363,7 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
 
     it('returns placements for direct qualification code lookup via getPlacementsForQualificationCode', () => {
       const p4531 = getPlacementsForQualificationCode('4531');
-      expect(p4531.length).toBe(23);
+      expect(p4531.length).toBe(67);
       expect(p4531.every((r) => r.nitelikKodlari.includes('4531'))).toBe(true);
 
       const p7300 = getPlacementsForQualificationCode('7300');
@@ -383,7 +383,7 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
       expect(p3001.every((r) => r.nitelikKodlari.includes('3001'))).toBe(true);
 
       const p2001 = getPlacementsForQualificationCode('2001');
-      expect(p2001.length).toBe(5);
+      expect(p2001.length).toBe(385);
       expect(p2001.every((r) => r.nitelikKodlari.includes('2001'))).toBe(true);
 
       const nonExistent = getPlacementsForQualificationCode('9999');
@@ -413,11 +413,11 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
     });
 
     it('verifies searchIndex has pre-computed data structures populated', () => {
-      expect(searchIndex.recordsById.size).toBe(1783);
-      expect(searchIndex.recordsByKadroKodu.size).toBe(1783);
+      expect(searchIndex.recordsById.size).toBe(9703);
+      expect(searchIndex.recordsByKadroKodu.size).toBe(9703);
       expect(searchIndex.recordsByQualificationCode.size).toBeGreaterThan(30);
       expect(searchIndex.recordsByCity.size).toBeGreaterThan(30);
-      expect(searchIndex.recordSearchCorpus.size).toBe(1783);
+      expect(searchIndex.recordSearchCorpus.size).toBe(9703);
       expect(searchIndex.tokenToRecordIds.size).toBeGreaterThan(500);
     });
   });

@@ -27,49 +27,60 @@ import { trackEvent } from '@/lib/analytics';
 export interface SearchWorkbenchProps {
   onSelectDepartmentPlacements: (department: Department) => void;
   onSelectCodePlacements: (code: string) => void;
+  onDirectSearch?: (query: string) => void;
   onOpenCodeDetail?: (code: string) => void;
   onFilterByScore?: (score: number, level?: EducationLevel) => void;
   onQuickFilterLevel?: (level?: EducationLevel) => void;
+  onQuickFilterPeriod?: (period?: string) => void;
   activeLevel?: EducationLevel;
+  activePeriod?: string;
+  searchQuery?: string;
   totalRecordsCount?: number;
 }
 
 const POPULAR_DEPARTMENTS = [
-  'Bilgisayar Mühendisliği',
+  'Tıbbi Dokümantasyon ve Sekreterlik',
   'Hemşirelik',
+  'Ağız ve Diş Sağlığı',
+  'Bilgisayar Mühendisliği',
   'Hukuk',
   'Adalet',
   'Maliye',
   'Elektrik-Elektronik Mühendisliği',
   'İnşaat Mühendisliği',
-  'Veteriner Hekimliği',
+  'İlk ve Acil Yardım',
   'İlahiyat',
-  'Tıbbi Dokümantasyon ve Sekreterlik',
 ];
 
 const POPULAR_CODES = [
-  { code: '4001', label: '4001 (Herhangi Lisans)' },
-  { code: '3001', label: '3001 (Herhangi Ön Lisans)' },
-  { code: '2001', label: '2001 (Herhangi Lise)' },
+  { code: '3011', label: '3011 (Ağız Diş / Diş Sekr.)' },
+  { code: '3047', label: '3047 (Tıbbi Sekreterlik)' },
+  { code: '4605', label: '4605 (Hemşirelik)' },
+  { code: '4001', label: '4001 (Tüm Lisans)' },
+  { code: '3001', label: '3001 (Tüm Ön Lisans)' },
+  { code: '2001', label: '2001 (Tüm Lise)' },
   { code: '4419', label: '4419 (Hukuk)' },
   { code: '4531', label: '4531 (Bilgisayar Müh.)' },
-  { code: '4605', label: '4605 (Hemşirelik)' },
   { code: '3003', label: '3003 (Adalet)' },
   { code: '6225', label: '6225 (Bilgisayar Sertifikası)' },
   { code: '7225', label: '7225 (Güvenlik Tahkikatı)' },
-  { code: '7205', label: '7205 (Avukatlık Ruhsatı)' },
 ];
 
 export default function SearchWorkbench({
   onSelectDepartmentPlacements,
   onSelectCodePlacements,
+  onDirectSearch,
   onOpenCodeDetail,
   onFilterByScore,
   onQuickFilterLevel,
+  onQuickFilterPeriod,
   activeLevel,
-  totalRecordsCount = 1783,
+  activePeriod,
+  searchQuery = '',
+  totalRecordsCount = 9703,
 }: SearchWorkbenchProps) {
-  const [searchMode, setSearchMode] = useState<'department' | 'code' | 'score'>('department');
+  const [searchMode, setSearchMode] = useState<'department' | 'code' | 'score' | 'direct'>('department');
+  const [directQuery, setDirectQuery] = useState<string>(searchQuery);
 
   // Mode A: Department Search States
   const [deptQuery, setDeptQuery] = useState<string>('');
@@ -133,6 +144,30 @@ export default function SearchWorkbench({
       if (tableEl) {
         tableEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+    }
+  };
+
+  const handleDirectSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onDirectSearch) {
+      onDirectSearch(directQuery);
+      trackEvent('direct_search', { query: directQuery });
+    }
+    const tableEl = document.getElementById('results-section');
+    if (tableEl) {
+      tableEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleDirectKeywordChip = (keyword: string) => {
+    setDirectQuery(keyword);
+    if (onDirectSearch) {
+      onDirectSearch(keyword);
+      trackEvent('direct_search_chip', { query: keyword });
+    }
+    const tableEl = document.getElementById('results-section');
+    if (tableEl) {
+      tableEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -204,27 +239,50 @@ export default function SearchWorkbench({
               <Target className="w-3.5 h-3.5" />
               <span>Puanımla Bul</span>
             </button>
+            <button
+              type="button"
+              onClick={() => setSearchMode('direct')}
+              className={`px-3 py-1.5 flex items-center gap-1.5 transition-colors cursor-pointer ${
+                searchMode === 'direct'
+                  ? 'bg-red-700 text-white font-bold shadow-2xs'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Hızlı Kadro Arama</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* QUICK LEVEL FILTER STRIP: One-Click Narrowing */}
+      {/* QUICK LEVEL & PERIOD FILTER STRIP: One-Click Narrowing */}
       <div className="bg-slate-100/70 border-b border-slate-200 px-4 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="font-bold text-slate-700 flex items-center gap-1 mr-1">
             <Layers className="w-3.5 h-3.5 text-slate-500" />
-            Hızlı Düzey Filtresi:
+            Hızlı Filtre:
           </span>
           <button
             type="button"
             onClick={() => onQuickFilterLevel && onQuickFilterLevel(undefined)}
             className={`px-2.5 py-1 text-xs border transition-colors cursor-pointer font-medium ${
-              activeLevel === undefined
+              activeLevel === undefined && !activePeriod
                 ? 'bg-slate-900 text-white border-slate-900 font-bold'
                 : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
             }`}
           >
             Tüm Kadrolar ({totalRecordsCount})
+          </button>
+          <button
+            type="button"
+            onClick={() => onQuickFilterPeriod && onQuickFilterPeriod(activePeriod === '2024/5' ? undefined : '2024/5')}
+            className={`px-2.5 py-1 text-xs border transition-colors cursor-pointer font-medium ${
+              activePeriod === '2024/5'
+                ? 'bg-red-800 text-white border-red-800 font-bold'
+                : 'bg-white text-red-900 border-red-200 hover:bg-red-50'
+            }`}
+          >
+            Sağlık Bakanlığı (2024/5 - 27.000 Kadro)
           </button>
           <button
             type="button"
@@ -261,20 +319,41 @@ export default function SearchWorkbench({
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => handleSelectCodeChip('3047')}
+            className="text-[11px] font-mono text-slate-700 bg-white border border-slate-300 px-2 py-0.5 hover:border-red-700 hover:text-red-700 transition-colors"
+          >
+            3047 (Tıbbi Sekreter)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSelectCodeChip('3011')}
+            className="text-[11px] font-mono text-slate-700 bg-white border border-slate-300 px-2 py-0.5 hover:border-red-700 hover:text-red-700 transition-colors"
+          >
+            3011 (Ağız Diş)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSelectCodeChip('4605')}
+            className="text-[11px] font-mono text-slate-700 bg-white border border-slate-300 px-2 py-0.5 hover:border-red-700 hover:text-red-700 transition-colors"
+          >
+            4605 (Hemşire)
+          </button>
           <button
             type="button"
             onClick={() => handleSelectCodeChip('4001')}
             className="text-[11px] font-mono text-slate-600 bg-white border border-slate-300 px-2 py-0.5 hover:border-red-700 hover:text-red-700 transition-colors"
           >
-            4001 Kadroları
+            4001
           </button>
           <button
             type="button"
             onClick={() => handleSelectCodeChip('3001')}
             className="text-[11px] font-mono text-slate-600 bg-white border border-slate-300 px-2 py-0.5 hover:border-red-700 hover:text-red-700 transition-colors"
           >
-            3001 Kadroları
+            3001
           </button>
         </div>
       </div>
@@ -709,6 +788,73 @@ export default function SearchWorkbench({
               <p className="text-[11px] text-slate-500 mt-2">
                 Puanınız ve altındaki taban puanla kapatan kadrolar puan sıralı olarak tabloya filtrelenecektir.
               </p>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* MODE D: HIZLI KADRO VE SERBEST ARAMA */}
+      {searchMode === 'direct' && (
+        <div className="p-4 sm:p-5">
+          <form onSubmit={handleDirectSearchSubmit} className="max-w-3xl space-y-4">
+            <div>
+              <label
+                htmlFor="direct-search-input"
+                className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5"
+              >
+                Kadro Unvanı, Kurum, Şehir veya Nitelik Kodu:
+              </label>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+                  <input
+                    id="direct-search-input"
+                    type="text"
+                    value={directQuery}
+                    onChange={(e) => setDirectQuery(e.target.value)}
+                    placeholder="Örn: Tıbbi Sekreter, Hemşire, 3011, 3047, Şoför, Ankara Şehir Hastanesi..."
+                    className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-red-700 focus:ring-1 focus:ring-red-700 outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="py-2.5 px-6 bg-red-700 hover:bg-red-800 active:scale-[0.99] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-sm cursor-pointer whitespace-nowrap"
+                >
+                  <Search className="w-4 h-4" />
+                  <span>Kadrolarda Ara</span>
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-2">
+                Doğrudan unvan, hastane, şehir veya nitelik kodu yazarak tüm 9.703 kadroyu anında filtreleyin.
+              </p>
+            </div>
+
+            {/* Popular Direct Search Keywords */}
+            <div className="pt-2 border-t border-slate-200">
+              <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-2">
+                Sık Aranan Kadro ve Unvanlar:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: 'Tıbbi Sekreter (3047)', q: 'tıbbi sekreter' },
+                  { label: 'Ağız ve Diş Sağlığı (3011)', q: '3011' },
+                  { label: 'Hemşire (4605)', q: 'hemşire' },
+                  { label: 'Paramedik / İlk ve Acil (3059)', q: '3059' },
+                  { label: 'Laboratuvar Teknikeri (3063)', q: 'tıbbi laboratuvar' },
+                  { label: 'Röntgen / Radyoloji (3065)', q: 'tıbbi görüntüleme' },
+                  { label: 'Büro Personeli', q: 'büro personeli' },
+                  { label: 'Destek Personeli / Şoför', q: 'şoför' },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => handleDirectKeywordChip(item.q)}
+                    className="px-2.5 py-1 text-xs border border-slate-200 bg-slate-50 hover:bg-slate-200 text-slate-800 font-medium transition-colors cursor-pointer"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </form>
         </div>

@@ -7,7 +7,9 @@ export type AnalyticsEventName =
   | 'lookup_qualification_code'
   | 'filter_changed'
   | 'view_toggled'
-  | 'cadre_inspected';
+  | 'cadre_inspected'
+  | 'direct_search'
+  | 'direct_search_chip';
 
 export interface AnalyticsEventParams {
   [key: string]: string | number | boolean | undefined;

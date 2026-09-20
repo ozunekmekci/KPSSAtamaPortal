@@ -137,10 +137,11 @@ export default function HomePage() {
 
   // Handler: One-click "Bu Bölümün Atamalarını Listele" from SearchWorkbench
   const handleSelectDepartmentPlacements = useCallback((dept: Department) => {
+    const codes = [dept.nitelikKodu, ...(dept.esdegerKodlar || [])];
     setCriteria((prev) => ({
       ...prev,
       ogrenimDuzeyi: dept.ogrenimDuzeyi,
-      nitelikKodlari: [dept.nitelikKodu],
+      nitelikKodlari: codes,
       page: 1,
     }));
     setActiveView('table');
@@ -161,10 +162,13 @@ export default function HomePage() {
         ? qual.ogrenimDuzeyi
         : undefined;
 
+    // Cross-link 3011 and 3047 for candidate ease of use
+    const codes = code === '3011' ? ['3011', '3047'] : code === '3047' ? ['3047', '3011'] : [code];
+
     setCriteria((prev) => ({
       ...prev,
       ogrenimDuzeyi: resolvedLevel,
-      nitelikKodlari: [code],
+      nitelikKodlari: codes,
       page: 1,
     }));
     setActiveView('table');
@@ -172,6 +176,30 @@ export default function HomePage() {
     if (tableEl) {
       tableEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  }, []);
+
+  // Handler: Direct Free Search from SearchWorkbench
+  const handleDirectSearch = useCallback((query: string) => {
+    setCriteria((prev) => ({
+      ...prev,
+      searchQuery: query.trim() ? query.trim() : undefined,
+      page: 1,
+    }));
+    setActiveView('table');
+    const tableEl = document.getElementById('results-section');
+    if (tableEl) {
+      tableEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
+
+  // Handler: Quick period filter
+  const handleQuickFilterPeriod = useCallback((period?: string) => {
+    setCriteria((prev) => ({
+      ...prev,
+      donemler: period ? [period] : undefined,
+      page: 1,
+    }));
+    setActiveView('table');
   }, []);
 
   // Handler: Sort change
@@ -260,13 +288,17 @@ export default function HomePage() {
           onViewChange={setActiveView}
         />
 
-        {/* Dual-Mode Search Workbench */}
+        {/* Unified Search Workbench */}
         <SearchWorkbench
           onSelectDepartmentPlacements={handleSelectDepartmentPlacements}
           onSelectCodePlacements={handleSelectCodePlacements}
+          onDirectSearch={handleDirectSearch}
           onFilterByScore={handleFilterByScore}
           onQuickFilterLevel={handleQuickFilterLevel}
+          onQuickFilterPeriod={handleQuickFilterPeriod}
           activeLevel={criteria.ogrenimDuzeyi}
+          activePeriod={criteria.donemler?.[0]}
+          searchQuery={criteria.searchQuery || ''}
           totalRecordsCount={PLACEMENT_RECORDS.length}
         />
 

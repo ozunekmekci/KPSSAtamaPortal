@@ -32,6 +32,8 @@ export const INSTITUTION_ALIASES: Record<string, string[]> = {
   'ANKARA ÜNİVERSİTESİ': ['au', 'ankara uni'],
   'İÇİŞLERİ BAKANLIĞI': ['icisleri'],
   'TİCARET BAKANLIĞI': ['gumruk', 'ticaret'],
+  'T.C. SAĞLIK BAKANLIĞI': ['saglik bakanligi', 'sb', 'hastane', 'devlet hastanesi', 'sehir hastanesi'],
+  'SAĞLIK BAKANLIĞI': ['saglik bakanligi', 'sb', 'hastane', 'devlet hastanesi', 'sehir hastanesi'],
 };
 
 export const TITLE_ALIASES: Record<string, string[]> = {
@@ -45,6 +47,17 @@ export const TITLE_ALIASES: Record<string, string[]> = {
   'AIM MEMURU': ['aim', 'havacilik bilgi yonetimi', 'havacilik bilgi memuru'],
   'İKM': ['ikm', 'infaz koruma memuru', 'gardiyan'],
   'MÜHENDİS': ['muhendis', 'eng'],
+  'TIBBİ SEKRETER': ['tibbi sekreter', 'tibbi sekreterlik', 'tibbi dokumantasyon', 'tibbi se', 'sekreter', '3047', '3011', 'saglik teknikeri'],
+  'SAĞLIK TEKNİKERİ (TIBBİ SEKRETER)': ['tibbi sekreter', 'tibbi sekreterlik', 'tibbi dokumantasyon', 'tibbi se', 'sekreter', '3047', '3011', 'saglik teknikeri'],
+  'AĞIZ DİŞ SAĞLIĞI': ['agiz dis sagligi', 'dis teknik sekreterligi', 'dis hekimligi', '3011', 'sekreter'],
+  'SAĞLIK TEKNİKERİ (AĞIZ DİŞ SAĞLIĞI)': ['agiz dis sagligi', 'dis teknik sekreterligi', 'dis hekimligi', '3011', 'sekreter'],
+  'HEMŞİRE': ['hemsire', 'hemsirelik', '4605', '4703', '2125'],
+  'EBE': ['ebe', 'ebelik', '4603', '2125'],
+  'İLK VE ACİL YARDIM': ['paramedik', 'ilk ve acil yardim', 'acil tip', '3005', '2087'],
+  'PARAMEDİK': ['paramedik', 'ilk ve acil yardim', 'acil tip', '3005', '2087'],
+  'TIBBİ LABORATUVAR': ['laborant', 'tibbi laboratuvar', '3023', '2099'],
+  'RÖNTGEN': ['rontgen', 'radyoloji', 'tibbi goruntuleme', '3037', '2097'],
+  'ANESTEZİ': ['anestezi', 'anestezi teknikeri', '3007', '2089'],
 };
 
 // ============================================================================

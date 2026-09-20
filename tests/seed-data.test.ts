@@ -3,11 +3,12 @@ import { PLACEMENT_RECORDS } from '@/data/records';
 
 describe('Seed Placement Records Dataset Integrity', () => {
   it('contains comprehensive records across all periods and levels', () => {
-    expect(PLACEMENT_RECORDS.length).toBe(1783);
+    expect(PLACEMENT_RECORDS.length).toBe(9703);
 
     const periods = new Set(PLACEMENT_RECORDS.map((r) => r.donem));
     expect(periods.has('2024/1')).toBe(true);
     expect(periods.has('2024/2')).toBe(true);
+    expect(periods.has('2024/5')).toBe(true);
 
     const levels = new Set(PLACEMENT_RECORDS.map((r) => r.ogrenimDuzeyi));
     expect(levels.has('lisans')).toBe(true);

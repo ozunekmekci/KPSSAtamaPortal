@@ -195,10 +195,10 @@ describe('Milestone 4 Adversarial Empirical Challenge Suite', () => {
       expect(screen.getByText(/arası listeleniyor/i)).toHaveTextContent(/Toplam 0 kadrodan 0 - 0 arası listeleniyor/);
     });
 
-    it('2.2 Score range 99.00 - 100.00 with zero results does not crash average calculation or table', () => {
+    it('2.2 Score range with zero results does not crash average calculation or table', () => {
       const extremeScoreCriteria: ExtendedFilterCriteria = {
-        minPuan: 99.5,
-        maxPuan: 100.0,
+        minPuan: 100.5,
+        maxPuan: 105.0,
       };
       const filtered = filterPlacements(PLACEMENT_RECORDS, extremeScoreCriteria);
       expect(filtered.length).toBe(0);

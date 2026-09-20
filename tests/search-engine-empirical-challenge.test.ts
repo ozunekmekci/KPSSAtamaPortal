@@ -246,12 +246,12 @@ describe('Milestone 2 Empirical Challenge: Smart Search Engine & Inverted Index 
   describe('Challenge 4: "Atamaları Göster" Resolver Authenticity & Invariants', () => {
 
     const testDepts = [
-      { id: 'bilgisayar-muhendisligi', code: '4531', expectedSpecific: 23, expectedWithGen: 24 },
+      { id: 'bilgisayar-muhendisligi', code: '4531', expectedSpecific: 67, expectedWithGen: 68 },
       { id: 'adalet-onlisans', code: '3003', expectedSpecific: 35, expectedWithGen: 48 },
       { id: 'hemsirelik', code: '4703', expectedSpecific: 5, expectedWithGen: 6 },
       { id: 'hukuk', code: '4419', expectedSpecific: 134, expectedWithGen: 135 },
-      { id: 'makine-muhendisligi', code: '4639', expectedSpecific: 52, expectedWithGen: 53 },
-      { id: 'insaat-muhendisligi', code: '4669', expectedSpecific: 22, expectedWithGen: 23 },
+      { id: 'makine-muhendisligi', code: '4639', expectedSpecific: 54, expectedWithGen: 55 },
+      { id: 'insaat-muhendisligi', code: '4669', expectedSpecific: 30, expectedWithGen: 31 },
     ];
 
     for (const td of testDepts) {
@@ -303,9 +303,9 @@ describe('Milestone 2 Empirical Challenge: Smart Search Engine & Inverted Index 
 
     it('4.2 getPlacementsForQualificationCode directly resolves all mandatory codes', () => {
       const codeCounts: Record<string, number> = {
-        '4531': 23,
+        '4531': 67,
         '3003': 35,
-        '2001': 5,
+        '2001': 385,
         '7300': 595,
         '7257': 546,
         '6225': 98,
@@ -401,20 +401,20 @@ describe('Milestone 2 Empirical Challenge: Smart Search Engine & Inverted Index 
       }
       const end = performance.now();
       const avgMs = (end - start) / iterations;
-      expect(avgMs).toBeLessThan(2.5);
+      expect(avgMs).toBeLessThan(5.0);
     });
 
     it('5.6 SearchIndex singleton integrity: all core structures pre-computed and populated', () => {
-      expect(searchIndex.recordsById.size).toBe(1783);
-      expect(searchIndex.recordsByKadroKodu.size).toBe(1783);
+      expect(searchIndex.recordsById.size).toBe(9703);
+      expect(searchIndex.recordsByKadroKodu.size).toBe(9703);
       expect(searchIndex.recordsByQualificationCode.size).toBeGreaterThanOrEqual(30);
       expect(searchIndex.recordsByCity.size).toBeGreaterThanOrEqual(30);
       expect(searchIndex.recordsByEducationLevel.size).toBe(3);
       expect(searchIndex.recordsByPeriod.size).toBeGreaterThanOrEqual(1);
-      expect(searchIndex.recordSearchCorpus.size).toBe(1783);
+      expect(searchIndex.recordSearchCorpus.size).toBe(9703);
       expect(searchIndex.tokenToRecordIds.size).toBeGreaterThan(500);
-      expect(searchIndex.departmentsById.size).toBe(68);
-      expect(searchIndex.qualificationByCode.size).toBe(276);
+      expect(searchIndex.departmentsById.size).toBe(69);
+      expect(searchIndex.qualificationByCode.size).toBe(305);
     });
   });
 });

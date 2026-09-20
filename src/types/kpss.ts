@@ -6,7 +6,7 @@ export type EducationLevel = 'lisans' | 'onlisans' | 'ortaogretim';
 
 export type ScoreType = 'P3' | 'P93' | 'P94';
 
-export type PlacementPeriod = '2024/1' | '2024/2' | '2025/1' | '2025/2' | '2026/1';
+export type PlacementPeriod = '2024/1' | '2024/2' | '2024/5' | '2025/1' | '2025/2' | '2026/1' | string;
 
 export type HizmetSinifi =
   | 'TH'   // Teknik Hizmetler Sınıfı
@@ -105,7 +105,8 @@ export type QualificationCategory =
   | 'yabanci_dil'            // 7111-7147 (YDS seviyeleri)
   | 'guvenlik_ve_vardiya'    // 7300, 7303, 7304, 7225
   | 'kurumsal_ozel_sart'     // 7322 (DHMİ), 7324 (TCDD), 7368 (Gümrük), 7257
-  | 'diger_ozel_sart';
+  | 'diger_ozel_sart'
+  | 'ozel_sart';
 
 export interface QualificationCode {
   /** 4-digit numeric code string (e.g. "4531") */
