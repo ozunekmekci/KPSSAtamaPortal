@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { PLACEMENT_RECORDS } from '@/data/records';
 import { QUALIFICATIONS_BY_CODE } from '@/data/qualifications';
-import { Department, PlacementRecord } from '@/types/kpss';
+import { Department, PlacementRecord, EducationLevel } from '@/types/kpss';
 import {
   ExtendedFilterCriteria,
   FilterSortOption,
@@ -226,6 +226,29 @@ export default function HomePage() {
     }));
   }, []);
 
+  // Handler: Filter by score from SearchWorkbench
+  const handleFilterByScore = useCallback((score: number, level?: EducationLevel) => {
+    setCriteria((prev) => ({
+      ...prev,
+      ogrenimDuzeyi: level || prev.ogrenimDuzeyi,
+      maxPuan: score,
+      minPuan: undefined,
+      sortBy: 'tabanPuanDesc',
+      page: 1,
+    }));
+    setActiveView('table');
+  }, []);
+
+  // Handler: Quick level pill filter
+  const handleQuickFilterLevel = useCallback((level?: EducationLevel) => {
+    setCriteria((prev) => ({
+      ...prev,
+      ogrenimDuzeyi: level,
+      page: 1,
+    }));
+    setActiveView('table');
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-red-100 selection:text-red-900 font-sans">
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-6">
@@ -241,6 +264,10 @@ export default function HomePage() {
         <SearchWorkbench
           onSelectDepartmentPlacements={handleSelectDepartmentPlacements}
           onSelectCodePlacements={handleSelectCodePlacements}
+          onFilterByScore={handleFilterByScore}
+          onQuickFilterLevel={handleQuickFilterLevel}
+          activeLevel={criteria.ogrenimDuzeyi}
+          totalRecordsCount={PLACEMENT_RECORDS.length}
         />
 
         {/* Analytics View or Results Table View */}
@@ -250,36 +277,79 @@ export default function HomePage() {
             onSelectCadre={setSelectedCadre}
           />
         ) : (
-          <div id="results-section" className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            {/* Left Filter Sidebar (3 cols on large screens) */}
-            <div className="lg:col-span-4 xl:col-span-3">
-              <FilterSidebar
-                criteria={criteria}
-                facets={facets}
-                allRecords={PLACEMENT_RECORDS}
-                onCriteriaChange={setCriteria}
-                onReset={handleResetFilters}
-              />
+          <div id="results-section" className="space-y-3">
+            {/* Active Context & Results Counter Banner */}
+            <div className="bg-white border border-slate-300 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-bold text-slate-900">
+                  {allFilteredRecords.length.toLocaleString('tr-TR')} Kadro Listeleniyor
+                </span>
+                <span className="text-slate-300">|</span>
+                <span className="text-slate-600">
+                  {criteria.ogrenimDuzeyi
+                    ? `${criteria.ogrenimDuzeyi === 'lisans' ? 'Lisans' : criteria.ogrenimDuzeyi === 'onlisans' ? 'Ön Lisans' : 'Ortaöğretim'} Kadroları`
+                    : 'Tüm Öğrenim Düzeyleri (2024/1 & 2024/2)'}
+                </span>
+                {criteria.nitelikKodlari && criteria.nitelikKodlari.length > 0 && (
+                  <span className="px-2 py-0.5 bg-red-50 text-red-800 border border-red-200 font-mono font-bold text-[11px]">
+                    Kod: {criteria.nitelikKodlari.join(', ')}
+                  </span>
+                )}
+                {criteria.maxPuan !== undefined && (
+                  <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold text-[11px]">
+                    Puan: ≤ {criteria.maxPuan}
+                  </span>
+                )}
+              </div>
+
+              {(criteria.ogrenimDuzeyi ||
+                (criteria.nitelikKodlari && criteria.nitelikKodlari.length > 0) ||
+                (criteria.sehirler && criteria.sehirler.length > 0) ||
+                (criteria.kurumlar && criteria.kurumlar.length > 0) ||
+                criteria.maxPuan !== undefined ||
+                criteria.minPuan !== undefined ||
+                criteria.searchQuery) && (
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="text-xs font-semibold text-red-700 hover:text-red-900 underline cursor-pointer"
+                >
+                  Filtreleri Temizle
+                </button>
+              )}
             </div>
 
-            {/* Right Results Table (8/9 cols on large screens) */}
-            <div className="lg:col-span-8 xl:col-span-9">
-              <CadreTable
-                records={paginatedRecords}
-                allFilteredRecordsCount={allFilteredRecords.length}
-                totalQuota={totalQuota}
-                totalPlaced={totalPlaced}
-                totalVacant={totalVacant}
-                avgMinScore={avgMinScore}
-                currentPage={currentPage}
-                pageSize={pageSize}
-                sortBy={criteria.sortBy}
-                onSortChange={handleSortChange}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-                onSelectCadre={setSelectedCadre}
-                onSelectCode={handleCodeBadgeClick}
-              />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              {/* Left Filter Sidebar (3 cols on large screens) */}
+              <div className="lg:col-span-4 xl:col-span-3">
+                <FilterSidebar
+                  criteria={criteria}
+                  facets={facets}
+                  allRecords={PLACEMENT_RECORDS}
+                  onCriteriaChange={setCriteria}
+                  onReset={handleResetFilters}
+                />
+              </div>
+
+              {/* Right Results Table (8/9 cols on large screens) */}
+              <div className="lg:col-span-8 xl:col-span-9">
+                <CadreTable
+                  records={paginatedRecords}
+                  allFilteredRecordsCount={allFilteredRecords.length}
+                  totalQuota={totalQuota}
+                  totalPlaced={totalPlaced}
+                  totalVacant={totalVacant}
+                  avgMinScore={avgMinScore}
+                  currentPage={currentPage}
+                  pageSize={pageSize}
+                  sortBy={criteria.sortBy}
+                  onSortChange={handleSortChange}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                  onSelectCadre={setSelectedCadre}
+                  onSelectCode={handleCodeBadgeClick}
+                />
+              </div>
             </div>
           </div>
         )}

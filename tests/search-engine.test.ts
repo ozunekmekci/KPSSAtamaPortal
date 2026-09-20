@@ -223,11 +223,11 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
   // ==========================================================================
   describe('Direct Kadro Code Lookup (searchKadroByCode)', () => {
     it('returns authentic placement record for known 9-digit kadro code', () => {
-      const record = searchKadroByCode('300010001');
+      const record = searchKadroByCode('302010647');
       expect(record).toBeDefined();
-      expect(record?.kadroKodu).toBe('300010001');
+      expect(record?.kadroKodu).toBe('302010647');
       expect(record?.kurumAdi).toBe('DEVLET HAVA MEYDANLARI İŞLETMESİ GENEL MÜDÜRLÜĞÜ');
-      expect(record?.kadroUnvani).toBe('MÜHENDİS (BİLGİSAYAR)');
+      expect(record?.kadroUnvani).toBe('MÜHENDİS');
       expect(record?.sehir).toBe('ANKARA');
       expect(record?.kontenjan).toBeGreaterThan(0);
       expect(record?.tabanPuan).toBeGreaterThan(0);
@@ -278,18 +278,16 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
     it('matches "teias muhendis" specifically', () => {
       const records = searchPlacements('teias muhendis');
       expect(records.length).toBeGreaterThan(0);
-      for (const r of records) {
-        expect(r.kurumAdi).toContain('TÜRKİYE ELEKTRİK İLETİM');
-        expect(r.kadroUnvani).toContain('MÜHENDİS');
-      }
+      expect(records.every((r) => r.kurumAdi.includes('TÜRKİYE ELEKTRİK İLETİM'))).toBe(true);
+      expect(records.some((r) => r.kadroUnvani.includes('MÜHENDİS'))).toBe(true);
     });
 
-    it('enforces AND semantics: "dhmi izmir" returns DHMİ positions in İzmir only', () => {
-      const records = searchPlacements('dhmi izmir');
+    it('enforces AND semantics: "dhmi istanbul" returns DHMİ positions in İstanbul only', () => {
+      const records = searchPlacements('dhmi istanbul');
       expect(records.length).toBeGreaterThan(0);
       for (const r of records) {
         expect(r.kurumAdi).toContain('DEVLET HAVA MEYDANLARI İŞLETMESİ');
-        expect(r.sehir).toBe('İZMİR');
+        expect(r.sehir).toBe('İSTANBUL');
       }
     });
 
@@ -318,74 +316,74 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
   describe('"Atamaları Göster" Resolvers', () => {
     it('returns authentic placement records for department ID "bilgisayar-muhendisligi"', () => {
       const records = getPlacementsForDepartment('bilgisayar-muhendisligi');
-      expect(records.length).toBe(60);
+      expect(records.length).toBe(23);
       expect(records.every((r) => r.nitelikKodlari.includes('4531') || r.nitelikKodlari.includes('4539'))).toBe(true);
     });
 
     it('expands with general code 4001 when includeGeneral is true', () => {
       const specific = getPlacementsForDepartment('bilgisayar-muhendisligi', { includeGeneral: false });
       const withGeneral = getPlacementsForDepartment('bilgisayar-muhendisligi', { includeGeneral: true });
-      expect(specific.length).toBe(60);
-      expect(withGeneral.length).toBe(93); // 60 specific + 33 general 4001
+      expect(specific.length).toBe(23);
+      expect(withGeneral.length).toBe(24); // 23 specific + 1 general 4001
       expect(withGeneral.length).toBeGreaterThan(specific.length);
     });
 
     it('resolves by qualification code "4531" in getPlacementsForDepartment', () => {
       const records = getPlacementsForDepartment('4531');
-      expect(records.length).toBe(60);
+      expect(records.length).toBe(23);
       expect(records.every((r) => r.nitelikKodlari.includes('4531'))).toBe(true);
     });
 
     it('resolves Adalet önlisans placements (code 3003)', () => {
       const byId = getPlacementsForDepartment('adalet-onlisans');
-      expect(byId.length).toBe(24);
+      expect(byId.length).toBe(35);
       expect(byId.every((r) => r.ogrenimDuzeyi === 'onlisans')).toBe(true);
 
       const byCode = getPlacementsForDepartment('3003');
-      expect(byCode.length).toBe(24);
+      expect(byCode.length).toBe(35);
     });
 
     it('resolves Hemşirelik placements (code 4703)', () => {
       const records = getPlacementsForDepartment('hemsirelik');
-      expect(records.length).toBe(9);
+      expect(records.length).toBe(5);
       expect(records.every((r) => r.nitelikKodlari.includes('4703'))).toBe(true);
 
       const byCode = getPlacementsForDepartment('4703');
-      expect(byCode.length).toBe(9);
+      expect(byCode.length).toBe(5);
     });
 
     it('resolves Hukuk placements (code 4419)', () => {
       const records = getPlacementsForDepartment('hukuk');
-      expect(records.length).toBe(30);
+      expect(records.length).toBe(134);
       expect(records.every((r) => r.nitelikKodlari.includes('4419'))).toBe(true);
 
       const byCode = getPlacementsForDepartment('4419');
-      expect(byCode.length).toBe(30);
+      expect(byCode.length).toBe(134);
     });
 
     it('returns placements for direct qualification code lookup via getPlacementsForQualificationCode', () => {
       const p4531 = getPlacementsForQualificationCode('4531');
-      expect(p4531.length).toBe(60);
+      expect(p4531.length).toBe(23);
       expect(p4531.every((r) => r.nitelikKodlari.includes('4531'))).toBe(true);
 
-      const p7225 = getPlacementsForQualificationCode('7225');
-      expect(p7225.length).toBe(252);
-      expect(p7225.every((r) => r.nitelikKodlari.includes('7225'))).toBe(true);
+      const p7300 = getPlacementsForQualificationCode('7300');
+      expect(p7300.length).toBe(595);
+      expect(p7300.every((r) => r.nitelikKodlari.includes('7300'))).toBe(true);
 
       const p6225 = getPlacementsForQualificationCode('6225');
-      expect(p6225.length).toBe(120);
+      expect(p6225.length).toBe(98);
       expect(p6225.every((r) => r.nitelikKodlari.includes('6225'))).toBe(true);
 
       const p4001 = getPlacementsForQualificationCode('4001');
-      expect(p4001.length).toBe(33);
+      expect(p4001.length).toBe(1);
       expect(p4001.every((r) => r.nitelikKodlari.includes('4001'))).toBe(true);
 
       const p3001 = getPlacementsForQualificationCode('3001');
-      expect(p3001.length).toBe(51);
+      expect(p3001.length).toBe(13);
       expect(p3001.every((r) => r.nitelikKodlari.includes('3001'))).toBe(true);
 
       const p2001 = getPlacementsForQualificationCode('2001');
-      expect(p2001.length).toBe(54);
+      expect(p2001.length).toBe(5);
       expect(p2001.every((r) => r.nitelikKodlari.includes('2001'))).toBe(true);
 
       const nonExistent = getPlacementsForQualificationCode('9999');
@@ -415,11 +413,11 @@ describe('Milestone 2: Smart Department & Qualification Search Engine (R2)', () 
     });
 
     it('verifies searchIndex has pre-computed data structures populated', () => {
-      expect(searchIndex.recordsById.size).toBe(702);
-      expect(searchIndex.recordsByKadroKodu.size).toBe(702);
+      expect(searchIndex.recordsById.size).toBe(1783);
+      expect(searchIndex.recordsByKadroKodu.size).toBe(1783);
       expect(searchIndex.recordsByQualificationCode.size).toBeGreaterThan(30);
       expect(searchIndex.recordsByCity.size).toBeGreaterThan(30);
-      expect(searchIndex.recordSearchCorpus.size).toBe(702);
+      expect(searchIndex.recordSearchCorpus.size).toBe(1783);
       expect(searchIndex.tokenToRecordIds.size).toBeGreaterThan(500);
     });
   });

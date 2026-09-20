@@ -95,9 +95,9 @@ describe('Empirical Challenge: Bi-directional Qualification Mapping and Candidat
       expect(getDepartmentToCodes('random-123')).toBeUndefined();
     });
 
-    it('1.5 All 63 departments have complete, non-redundant eligibleQualificationCodes', () => {
+    it('1.5 All departments have complete, non-redundant eligibleQualificationCodes', () => {
       const all = getAllDepartmentMappings();
-      expect(all.length).toBe(63);
+      expect(all.length).toBe(68);
       for (const m of all) {
         // Set size must match array length (no duplicate codes)
         const uniqueSet = new Set(m.eligibleQualificationCodes);
@@ -292,14 +292,14 @@ describe('Empirical Challenge: Bi-directional Qualification Mapping and Candidat
     it('6.4 [REMEDIATED] General post reverse lookup returns all tier departments', () => {
       const rev4001 = getCodeToDepartments('4001');
       expect(rev4001).toBeDefined();
-      // Semantically covers all Lisans departments (34 departments):
-      expect(rev4001?.eligibleDepartments.length).toBe(34);
+      // Semantically covers all Lisans departments (38 departments):
+      expect(rev4001?.eligibleDepartments.length).toBe(38);
 
       const rev3001 = getCodeToDepartments('3001');
       expect(rev3001?.eligibleDepartments.length).toBe(19);
 
       const rev2001 = getCodeToDepartments('2001');
-      expect(rev2001?.eligibleDepartments.length).toBe(10);
+      expect(rev2001?.eligibleDepartments.length).toBe(11);
     });
 
     it('6.5 [REMEDIATED] Discrepancy between getDepartmentsByCode and getCodeToDepartments resolved on equivalent codes', () => {

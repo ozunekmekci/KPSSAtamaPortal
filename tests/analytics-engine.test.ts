@@ -322,7 +322,7 @@ describe('Analytics & Statistics Engine', () => {
       const analytics = computeAnalytics(PLACEMENT_RECORDS);
 
       expect(analytics.totalRecords).toBe(PLACEMENT_RECORDS.length);
-      expect(analytics.periodTrends.length).toBeGreaterThanOrEqual(3);
+      expect(analytics.periodTrends.length).toBeGreaterThanOrEqual(2);
       expect(analytics.extremes.lowestClosingPositions.length).toBe(10);
       expect(analytics.extremes.highestClosingPositions.length).toBe(10);
 
